@@ -16,7 +16,6 @@ This is the log file for weekly job and plans.
 3. Recommended tools to evaluate shared memory
 4. What's the kind of test case?
 5. What's test env? Anything we need to install in our dev env?
-6. Currently our basic thought is to create several test cases with random numbers of each data structure, in different ways of memory allocation (?是应该这么说吗) and compare their performances
 
 ### Plan for next week
 
@@ -24,3 +23,4 @@ This is the log file for weekly job and plans.
 2. Write a simple test case for mem test.
 3. Prepare test cases for shared mem. (Random data + multi-way access + shared mem)
 4. Set up and run the test software to show the perm of Boost.
+5. Create several test cases with random numbers of each data structure, in different ways of memory allocation and compare their performances.
