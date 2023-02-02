@@ -12,7 +12,7 @@ This is the log file for weekly job and plans.
 ### Question in this week
 
 1. How to set up the environment: ubuntu + clion + gcc +boost?
-2. What is the tool to evaluate performance? PMDK, Intel Memory Latency Checke, other?
+2. What is the tool to evaluate performance? PMDK, Intel Memory Latency Checker, other?
 3. Recommended tools to evaluate shared memory
 4. What's the kind of test case?
 5. What's test env? Anything we need to install in our dev env?
