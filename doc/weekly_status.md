@@ -20,7 +20,7 @@ This is the log file for weekly job and plans.
 
 1. Build shared mem test cases.
 1. Try to get the performance data of these test cases.
-1. Try to run in NUMA env.
+1. Try to run a simple case in NUMA env.
 
 ## Week 1 (2 Jan, 2023)
 
