@@ -14,7 +14,7 @@ This is the log file for weekly job and plans.
 
 1. Can we use some third-party libraries?
 1. How can we run the sample program given in your email.
-1. Is there any constrain in NUMA env? (latency? network?)
+1. Is there any constraints in NUMA env? (latency? network?)
 
 ### Plan for week 3
 
