@@ -7,7 +7,7 @@ This is the log file for weekly job and plans.
 ### Progress in week 2
 
 1. Finish building the env of MPI, running a sample test program.
-1. Finish building the env of Boost, running a sample test program.
+1. Finish building the env of Boost, running a interprocess test program.
 1. Build a simple NUMA env in software, not test yet.
 
 ### Question in week 2
