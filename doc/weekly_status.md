@@ -7,8 +7,8 @@ This is the log file for weekly job and plans.
 ### Progress in week 2
 
 1. Finish building the env of MPI, running a sample test program.
-1. Finish building the env of Boost, running a interprocess test program.
-1. Build a simple NUMA env in software, not test yet.
+1. Finish building the env of Boost, running an interprocess test program.
+1. Build a simple NUMA env in software, not tested yet.
 
 ### Question in week 2
 
@@ -21,6 +21,10 @@ This is the log file for weekly job and plans.
 1. Build shared mem test cases.
 1. Try to get the performance data of these test cases.
 1. Try to run a simple case in NUMA env.
+
+### Reference
+
+1. <https://github.com/scs-lab/labstor/blob/master/include/labstor/userspace/util/timer.h>
 
 ## Week 1 (2 Jan, 2023)
 
