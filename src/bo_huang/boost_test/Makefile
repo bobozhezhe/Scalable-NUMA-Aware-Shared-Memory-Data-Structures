@@ -1,5 +1,5 @@
 test:
-	g++ test_numa_memcpy.cpp -o test_numa_memcpy -I/usr/lib -lboost_thread -lpthread -lrt
+	g++ test_numa_memcpy.cpp -o test_numa_memcpy -I/usr/lib -lboost_thread -lpthread -lrt --as-needed
 test_memcpy:
 	g++ test_memcpy.cpp -o test_memcpy -I/usr/lib -lboost_thread -lpthread -lrt
 tc_first:

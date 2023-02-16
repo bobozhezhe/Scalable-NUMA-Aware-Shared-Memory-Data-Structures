@@ -48,7 +48,7 @@ int main()
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
         // Read the string back from the second shared memory region and print it to the console
-        std::string result(data2);
+        std::string result((char*)data2);
         std::cout << "Read from shared memory: " << result << std::endl;
         std::cout << "Time taken: " << duration << " ms" << std::endl;
 
@@ -57,7 +57,7 @@ int main()
         // shared_memory_object::remove("MySharedMemory2");
 
         // Free the allocated memory
-        numa_free(mem, MEM_LENGTH);
+        numa_free(data2, MEM_LENGTH);
     }
     catch (interprocess_exception& ex) {
         std::cerr << "Caught exception: " << ex.what() << std::endl;

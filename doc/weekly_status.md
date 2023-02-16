@@ -8,12 +8,20 @@ This is the log file for weekly job and plans.
 
 1. Finish the simple test case of shared mem in Boost.
 1. Get the simple performance data of the case.
-1. Build a NUMA test case, but cannot run.
+1. Build a NUMA test case, but cannot pass compile.
+```
+g++ test_numa_memcpy.cpp -o test_numa_memcpy -I/usr/lib -lboost_thread -lpthread -lrt
+/usr/bin/ld: /tmp/ccBCsYgY.o: in function `main':
+test_numa_memcpy.cpp:(.text+0xd8): undefined reference to `numa_alloc_onnode'
+/usr/bin/ld: test_numa_memcpy.cpp:(.text+0x261): undefined reference to `numa_free'
+collect2: error: ld returned 1 exit status
+make: *** [Makefile:2: test] Error 1
+```
 
 ### Question in week 3
 
 1. Can we use the Ares env to run NUMA case?
-
+1. Simulating NUMA needs VSphere, any other way?
 
 ## week 2 (9 Jan, 2023)
 
