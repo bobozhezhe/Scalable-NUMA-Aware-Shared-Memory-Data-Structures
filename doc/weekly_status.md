@@ -2,6 +2,19 @@
 
 This is the log file for weekly job and plans.
 
+## week 3 (16 Jan, 2023)
+
+### Progress in week 3
+
+1. Finish the simple test case of shared mem in Boost.
+1. Get the simple performance data of the case.
+1. Build a NUMA test case, but cannot run.
+
+### Question in week 3
+
+1. Can we use the Ares env to run NUMA case?
+
+
 ## week 2 (9 Jan, 2023)
 
 ### Progress in week 2
