@@ -2,14 +2,26 @@
 
 This is the log file for weekly job and plans.
 
-## week 3 (16 Jan, 2023)
+## Week 3 (16 Jan, 2023)
 
 ### Progress in week 3
 
 1. Finish the simple test case of shared mem in Boost.
 1. Get the simple performance data of the case.
 1. Build a NUMA test case, but cannot pass compile.
-```
+
+### Plan for week 3
+
+1. Build a OpenMPI test case.
+1. Each of us builds a test case based on a data structure, and tests the performance on shared memory or NUMA nodes.
+
+### Question in week 3
+
+1. Can we use the Ares env to run NUMA case?
+1. Simulating NUMA needs VSphere, any other way?
+1. Do you know how to solve the compile error? Log info is as following:
+
+```log
 g++ test_numa_memcpy.cpp -o test_numa_memcpy -I/usr/lib -lboost_thread -lpthread -lrt
 /usr/bin/ld: /tmp/ccBCsYgY.o: in function `main':
 test_numa_memcpy.cpp:(.text+0xd8): undefined reference to `numa_alloc_onnode'
@@ -17,11 +29,6 @@ test_numa_memcpy.cpp:(.text+0xd8): undefined reference to `numa_alloc_onnode'
 collect2: error: ld returned 1 exit status
 make: *** [Makefile:2: test] Error 1
 ```
-
-### Question in week 3
-
-1. Can we use the Ares env to run NUMA case?
-1. Simulating NUMA needs VSphere, any other way?
 
 ## week 2 (9 Jan, 2023)
 
