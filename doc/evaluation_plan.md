@@ -37,4 +37,3 @@ The main NUMA Optimizations (applies to each of the above data structures) are a
 
 1. Read Nearness: Let's say your machine has 4 NUMA nodes. The NUMA-aware unordered_map would be a wrapper around 4 regular unordered_maps (1 per NUMA node). During an emplace, the object would be created 4 times. During a read, the object would be read from the nearest NUMA node. Writes would be penalized for the sake of read optimization.
 2. Write Nearness: A different NUMA-aware unordered_map may focusing on improving the performance of an "emplace". This NUMA-aware unordered_map would be a wrapper around 4 regular unordered_maps (1 per NUMA node). During an emplace, the object would be placed in the unordered_map on the nearest NUMA node. Reads would have to scan each NUMA node to guarantee finding the object. Writes would be optimized. Reads may be penalized depending on the workload.
-

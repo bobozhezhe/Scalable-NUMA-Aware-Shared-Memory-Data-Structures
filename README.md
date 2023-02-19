@@ -4,10 +4,9 @@
 
 ## Folder assignment
 
-/doc            The files we generates.
-
-/paper          The paper or any materials using in project.
-
-/reference      The reference doc, template or project.
-
-/src            Source code.
+| Folder     | Notes                                        |
+|------------|----------------------------------------------|
+| /doc       | The files we generates.                      |
+| /paper     | The paper or any materials using in project. |
+| /reference | The reference doc, template or project.      |
+| /src       | Source code.                                 |
