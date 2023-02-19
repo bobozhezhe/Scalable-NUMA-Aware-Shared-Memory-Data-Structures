@@ -2,6 +2,8 @@
 
 This is the log file for weekly job and plans.
 
+---
+
 ## Week 3 (16 Jan, 2023)
 
 ### Progress in week 3
@@ -14,6 +16,8 @@ This is the log file for weekly job and plans.
 
 1. Build a OpenMPI test case.
 1. Each of us builds a test case based on a data structure, and tests the performance on shared memory or NUMA nodes.
+1. Build test cases in a way that can port to a machine with more than 1 NUMA node
+1. Evaluation plan. What were your test cases going to show and how?
 
 ### Question in week 3
 
