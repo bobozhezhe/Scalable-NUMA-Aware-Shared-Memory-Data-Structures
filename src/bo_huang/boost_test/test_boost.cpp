@@ -1,50 +1,41 @@
-#include <boost/interprocess/shared_memory_object.hpp>
-#include <boost/interprocess/mapped_region.hpp>
-#include <cstring>
+#include <boost/thread/thread.hpp>
+#include <iostream>
 #include <cstdlib>
-#include <string>
+using namespace std;
 
-int main(int argc, char *argv[])
+volatile bool isRuning = true;
+
+void func1()
 {
-   using namespace boost::interprocess;
-
-   if(argc == 1){  //Parent process
-      //Remove shared memory on construction and destruction
-      struct shm_remove
-      {
-         shm_remove() { shared_memory_object::remove("MySharedMemory"); }
-         ~shm_remove(){ shared_memory_object::remove("MySharedMemory"); }
-      } remover;
-
-      //Create a shared memory object.
-      shared_memory_object shm (create_only, "MySharedMemory", read_write);
-
-      //Set size
-      shm.truncate(1000);
-
-      //Map the whole shared memory in this process
-      mapped_region region(shm, read_write);
-
-      //Write all the memory to 1
-      std::memset(region.get_address(), 1, region.get_size());
-
-      //Launch child process
-      std::string s(argv[0]); s += " child ";
-      if(0 != std::system(s.c_str()))
-         return 1;
-   }
-   else{
-      //Open already created shared memory object.
-      shared_memory_object shm (open_only, "MySharedMemory", read_only);
-
-      //Map the whole shared memory in this process
-      mapped_region region(shm, read_only);
-
-      //Check that memory was initialized to 1
-      char *mem = static_cast<char*>(region.get_address());
-      for(std::size_t i = 0; i < region.get_size(); ++i)
-         if(*mem++ != 1)
-            return 1;   //Error checking memory
-   }
-   return 0;
+    static int cnt1 = 0;
+    while(isRuning)
+    {
+        cout << "func1:" << cnt1++ << endl;
+        sleep(1);
+    }
 }
+
+void func2()
+{
+    static int cnt2 = 0;
+    while(isRuning)
+    {
+        cout << "\tfunc2:" << cnt2++ << endl;
+        sleep(2);
+    }
+}
+
+int main()
+{
+    boost::thread thread1(&func1);
+    boost::thread thread2(&func2);
+
+    system("read");
+    isRuning = false;
+
+    thread2.join();
+    thread1.join();
+    cout << "exit" << endl;
+    return 0;
+}
+
