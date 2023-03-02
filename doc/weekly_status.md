@@ -4,7 +4,15 @@ This is the log file for weekly job and plans.
 
 ---
 
-## Week 3 (16 Jan, 2023)
+## Week 5 (2 Mar, 2023)
+
+1. Write a test case using unorder map.
+
+## Week 4 (23 Feb, 2023)
+
+Skipped, for the assignment and midterm exam.
+
+## Week 3 (16 Feb, 2023)
 
 ### Progress in week 3
 
@@ -34,7 +42,7 @@ collect2: error: ld returned 1 exit status
 make: *** [Makefile:2: test] Error 1
 ```
 
-## week 2 (9 Jan, 2023)
+## week 2 (9 Feb, 2023)
 
 ### Progress in week 2
 
@@ -58,7 +66,7 @@ make: *** [Makefile:2: test] Error 1
 
 1. <https://github.com/scs-lab/labstor/blob/master/include/labstor/userspace/util/timer.h>
 
-## Week 1 (2 Jan, 2023)
+## Week 1 (2 Feb, 2023)
 
 ### Progress in week 1
 
