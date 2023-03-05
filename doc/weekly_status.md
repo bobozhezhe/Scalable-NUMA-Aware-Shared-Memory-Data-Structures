@@ -7,6 +7,9 @@ This is the log file for weekly job and plans.
 ## Week 5 (2 Mar, 2023)
 
 1. Write a test case using unorder map.
+1. Make evaluation plan.
+
+### Plan for week 6
 
 ## Week 4 (23 Feb, 2023)
 
