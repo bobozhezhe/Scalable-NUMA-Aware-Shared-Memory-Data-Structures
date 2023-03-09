@@ -1,6 +1,5 @@
 #include <unordered_map>
 #include <vector>
-#include <chrono>
 #include <iostream>
 #include <mpi.h>
 #include <numa.h>
@@ -14,13 +13,13 @@ public:
     }
 
     template<typename ...Args>
-    // nserts an element into the unordered_map associated with the nearest NUMA node.
+    // Inserts an element into the unordered_map associated with the nearest NUMA node.
     void emplace(Args&& ...args) {
         int node = nearest_numa_node();
         node_maps_[node].emplace(std::forward<Args>(args)...);
     }
 
-    // searches for a key across all NUMA nodes 
+    // Searches for a key across all NUMA nodes 
     // and returns the associated value if found
     T& get(const Key& key) {
         for (auto& node_map : node_maps_) {
@@ -29,7 +28,7 @@ public:
                 return iter->second;
             }
         }
-        // hrows an out_of_range exception if the key is not found
+        // Throws an out_of_range exception if the key is not found
         throw std::out_of_range("key not found");
     }
 
@@ -52,29 +51,37 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     const int TIMES = 1000000;
+    const int NUM_PROCESSES = 4;
 
     numa_unordered_map<int, int> a;
 
+    double start_time = MPI_Wtime();
+    // Distribute emplace operations across all processes
+    for (int i = rank; i < TIMES; i += NUM_PROCESSES) {
+        a.emplace(i, i);
+    }
+    double end_time = MPI_Wtime();
+    double elapsed_time = end_time - start_time;
+    double max_elapsed_time;
+    MPI_Reduce(&elapsed_time, &max_elapsed_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (rank == 0) {
-        std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < TIMES; ++i) {
-            a.emplace(i, i);
-        }
-        std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-        std::cout << "Process " << rank << " emplace time: " << elapsed_time.count() << " seconds" << std::endl;
+        std::cout << "Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    if (rank != 0) {
-        std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < TIMES; ++i) {
-            int value = a.get(i);
-        }
-        std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-        std::cout << "Process " << rank << " get time: " << elapsed_time.count() << " seconds" << std::endl;
+    start_time = MPI_Wtime();
+    // Distribute get operations across all processes
+    for (int i = rank; i < TIMES; i += NUM_PROCESSES) {
+        int value = a.get(i);
+    }
+    end_time = MPI_Wtime();
+
+    elapsed_time = end_time - start_time;
+    MPI_Reduce(&elapsed_time, &max_elapsed_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        std::cout << "Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
     }
 
     MPI_Finalize();
