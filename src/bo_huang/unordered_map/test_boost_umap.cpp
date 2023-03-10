@@ -76,7 +76,9 @@ int main(int argc, char** argv) {
         std::cout << "Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
     }
 
-    boost::mpi::barrier(comm);
+    // boost::mpi::barrier(comm);
+    boost::mpi::all_reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
+
 
     start_time = MPI_Wtime();
     // Distribute get operations across all processes

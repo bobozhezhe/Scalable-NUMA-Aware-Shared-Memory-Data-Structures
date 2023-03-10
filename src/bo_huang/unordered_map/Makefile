@@ -7,13 +7,12 @@ CFLAGS = -std=c++11 -Wall -Wextra -pedantic -O3 -fopenmp
 # -Werror 
 
 LDFLAGS = -I/usr/lib -lpthread -lrt -lnuma
-BOOST_LDFLAGS = -I/usr/lib -lboost_thread 
-#-lboost_system -lboost_mpi -lboost_serialization
+BOOST_LDFLAGS = -lboost_serialization -lboost_mpi 
 
 all: test_boost_umap
 
-test_boost_umap:
-	$(GCC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
+test_boost_umap: test_boost_umap.cpp
+	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
 
 test: test.cpp
 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
