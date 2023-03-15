@@ -74,7 +74,8 @@ int main(int argc, char** argv) {
     // Define the shared memory name
     std::string shm_name = "my_shared_memory";
     // Create or open the shared memory segment
-    boost::interprocess::managed_shared_memory segment(create_only, shm_name.c_str(), MEM_LENGTH);
+    shared_memory_object::remove(shm_name.c_str());
+    boost::interprocess::managed_shared_memory segment(open_or_create, shm_name.c_str(), MEM_LENGTH);
 
     // Define an allocator for the unordered_map
     typedef boost::interprocess::allocator<std::pair<const int, int>, managed_shared_memory::segment_manager> ShmemAllocator;
