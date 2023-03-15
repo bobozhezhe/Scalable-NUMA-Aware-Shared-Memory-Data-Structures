@@ -6,9 +6,9 @@ CFLAGS = -std=c++11 -Wall -Wextra -pedantic -O3 -fopenmp
 # -Werror 
 
 LDFLAGS = -I/usr/lib -lpthread -lrt -lnuma
-BOOST_LDFLAGS = -lboost_serialization -lboost_mpi
+BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt
 
-all: test_boost_uset
+all: test_numa_uset test_boost_uset
 
 test_boost_uset: test_boost_uset.cpp
 	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
