@@ -7,7 +7,7 @@ CFLAGS = -std=c++11 -Wall -Wextra -pedantic -O3 -fopenmp
 # -Werror 
 
 LDFLAGS = -I/usr/lib -lpthread -lrt -lnuma
-BOOST_LDFLAGS = -lboost_serialization -lboost_mpi 
+BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt
 
 all: test_boost_umap
 
