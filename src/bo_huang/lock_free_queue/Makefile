@@ -9,9 +9,11 @@ BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt
 
 # all: test_sllwl
 
+test_numa_lock_free_queue : test_numa_lock_free_queue.cpp
+	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
 test_lock_free_queue : test_lock_free_queue.cpp
 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
 clean:
-	rm -f *.o test_lock_free_queue
+	rm -f *.o test_lock_free_queue test_numa_lock_free_queue

@@ -1,6 +1,7 @@
 #ifndef LOCK_FREE_QUEUE_H
 #define LOCK_FREE_QUEUE_H
 
+#include <atomic>
 
 template <typename T>
 class lock_free_queue {
