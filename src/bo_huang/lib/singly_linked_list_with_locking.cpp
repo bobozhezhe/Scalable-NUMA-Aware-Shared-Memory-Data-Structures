@@ -1,4 +1,4 @@
-// #include "singly_linked_list_with_locking.h"
+#include "singly_linked_list_with_locking.h"
 #include <iostream>
 
 // SinglyLinkedListWithLocking::SinglyLinkedListWithLocking() : head(nullptr) {}
@@ -36,30 +36,6 @@
 //     std::cout << std::endl;
 // }
 
-#ifndef SINGLY_LINKED_LIST_WITH_LOCKING_H
-#define SINGLY_LINKED_LIST_WITH_LOCKING_H
-
-#include <mutex>
-
-template <typename T>
-class SinglyLinkedListWithLocking {
-public:
-    SinglyLinkedListWithLocking();
-    ~SinglyLinkedListWithLocking();
-    void push_back(T value);
-    void print() const;
-
-private:
-    struct Node
-    {
-        T value;
-        Node *next;
-        Node(T value) : value(value), next(nullptr) {}
-    };
-    Node *head;
-    std::mutex mutex;
-};
-
 template <typename T>
 SinglyLinkedListWithLocking<T>::SinglyLinkedListWithLocking() : head(nullptr) {}
 
@@ -79,8 +55,7 @@ template <typename T>
 void SinglyLinkedListWithLocking<T>::push_back(T value)
 {
     Node *node = new Node(value);
-    std::lock_guard<std::mutex> lock(mutex);
-    // std::lock_guardstd::mutex lock(mutex);
+    std::lock_guard<std::mutex> lock(std::mutex);
     if (head == nullptr)
     {
         head = node;
@@ -99,8 +74,7 @@ void SinglyLinkedListWithLocking<T>::push_back(T value)
 template <typename T>
 void SinglyLinkedListWithLocking<T>::print() const
 {
-    std::lock_guard<std::mutex> lock(mutex);
-    // std::lock_guardstd::mutex lock(mutex);
+    std::lock_guard<std::mutex> lock(std::mutex);
     Node *current = head;
     while (current != nullptr)
     {
@@ -109,6 +83,4 @@ void SinglyLinkedListWithLocking<T>::print() const
     }
     std::cout << std::endl;
 }
-
-#endif
 

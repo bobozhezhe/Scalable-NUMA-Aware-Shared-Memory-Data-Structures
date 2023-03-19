@@ -23,53 +23,6 @@ private:
     std::mutex mutex;
 };
 
-template <typename T>
-SinglyLinkedListWithLocking<T>::SinglyLinkedListWithLocking() : head(nullptr) {}
-
-template <typename T>
-SinglyLinkedListWithLocking<T>::~SinglyLinkedListWithLocking()
-{
-    Node *current = head;
-    while (current != nullptr)
-    {
-        Node *next = current->next;
-        delete current;
-        current = next;
-    }
-}
-
-template <typename T>
-void SinglyLinkedListWithLocking<T>::push_back(T value)
-{
-    Node *node = new Node(value);
-    std::lock_guard<std::mutex> lock(std::mutex);
-    if (head == nullptr)
-    {
-        head = node;
-    }
-    else
-    {
-        Node *current = head;
-        while (current->next != nullptr)
-        {
-            current = current->next;
-        }
-        current->next = node;
-    }
-}
-
-template <typename T>
-void SinglyLinkedListWithLocking<T>::print() const
-{
-    std::lock_guard<std::mutex> lock(std::mutex);
-    Node *current = head;
-    while (current != nullptr)
-    {
-        std::cout << current->value << " ";
-        current = current->next;
-    }
-    std::cout << std::endl;
-}
-
+#include "singly_linked_list_with_locking.cpp"
 
 #endif
