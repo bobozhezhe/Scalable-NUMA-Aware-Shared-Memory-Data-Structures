@@ -3,14 +3,14 @@
 #include <thread>
 
 
-void push_values(SinglyLinkedListWithLocking<int>& list, int start, int end) {
+void push_values(singly_linked_list_with_locking<int>& list, int start, int end) {
     for (int i = start; i <= end; i++) {
         list.push_back(i);
     }
 }
 
 int main() {
-    SinglyLinkedListWithLocking<int> list;
+    singly_linked_list_with_locking<int> list;
     
     // Spawn two threads to push values into the list concurrently
     std::thread t1(push_values, std::ref(list), 1, 5);

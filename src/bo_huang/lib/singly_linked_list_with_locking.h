@@ -5,11 +5,12 @@
 #include <mutex>
 
 template <typename T>
-class SinglyLinkedListWithLocking {
+class singly_linked_list_with_locking {
 public:
-    SinglyLinkedListWithLocking();
-    ~SinglyLinkedListWithLocking();
+    singly_linked_list_with_locking();
+    ~singly_linked_list_with_locking();
     void push_back(T value);
+    bool contains(T value) const;
     void print() const;
 
 private:
