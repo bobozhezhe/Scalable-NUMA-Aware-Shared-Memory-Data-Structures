@@ -11,51 +11,6 @@
 #include <iostream>
 #include <vector>
 
-/*
-template<typename Key, typename T>
-class mpi_unordered_map {
-public:
-    mpi_unordered_map() {}
-
-    template<typename ...Args>
-    void emplace(Args&& ...args) {
-        data_.emplace(std::forward<Args>(args)...);
-    }
-
-    T& get(const Key& key) {
-        auto iter = data_.find(key);
-        if (iter != data_.end()) {
-            return iter->second;
-        }
-        throw std::out_of_range("key not found");
-    }
-
-    template<typename Archive>
-    void serialize(Archive& ar, const unsigned int version) {
-        ar & data_;
-    }
-
-private:
-    boost::unordered_map<Key, T> data_;
-};
-
-namespace boost {
-namespace serialization {
-
-template<typename Key, typename T>
-struct version<mpi_unordered_map<Key, T>> {
-    BOOST_STATIC_CONSTANT(int, value = 1);
-};
-
-template<typename Archive, typename Key, typename T>
-void serialize(Archive& ar, mpi_unordered_map<Key, T>& obj, const unsigned int version) {
-    obj.serialize(ar, version);
-}
-
-} // namespace serialization
-} // namespace boost
-*/
-
 using namespace boost::interprocess;
 using namespace boost::mpi;
 

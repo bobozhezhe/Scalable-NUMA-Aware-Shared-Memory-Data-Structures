@@ -1,29 +1,31 @@
+#include <boost/lockfree/queue.hpp>
 #include <iostream>
 #include <thread>
-#include <chrono>
-#include "../lib/lock_free_queue.h"
 
-const int NUM_THREADS = 4;
-const int NUM_ENQUEUE = 1000000;
+int main()
+{
+    // Create a lock-free queue with a capacity of 10 elements
+    boost::lockfree::queue<int> q(10);
 
-void enqueue_worker(lock_free_queue<int>& queue, int start_value) {
-    for (int i = 0; i < NUM_ENQUEUE; ++i) {
-        queue.enqueue(start_value + i);
-    }
-}
+    // Create a producer thread that adds numbers 0 to 9 to the queue
+    std::thread producer([&q]() {
+        for (int i = 0; i < 10; i++) {
+            while (!q.push(i)) {} // Keep trying to push until successful
+        }
+    });
 
-int main() {
-    lock_free_queue<int> queue;
-    std::thread threads[NUM_THREADS];
-    auto start_time = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        threads[i] = std::thread(enqueue_worker, std::ref(queue), i * NUM_ENQUEUE);
-    }
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        threads[i].join();
-    }
-    auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    std::cout << "Enqueued " << (NUM_THREADS * NUM_ENQUEUE) << " items in " << duration.count() << " ms" << std::endl;
+    // Create a consumer thread that retrieves numbers from the queue
+    std::thread consumer([&q]() {
+        int val;
+        for (int i = 0; i < 10; i++) {
+            while (!q.pop(val)) {} // Keep trying to pop until successful
+            std::cout << val << std::endl;
+        }
+    });
+
+    // Join the threads and wait for them to finish
+    producer.join();
+    consumer.join();
+
     return 0;
 }

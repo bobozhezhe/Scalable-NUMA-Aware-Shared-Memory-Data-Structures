@@ -33,7 +33,7 @@ bool lock_free_queue<T>::dequeue(T &result)
     {
         if (head.compare_exchange_weak(old_head, old_head->next))
         {
-            result = old_head->next->data;
+            result = old_head->load()->next->data;
             delete old_head;
             return true;
         }

@@ -9,7 +9,7 @@ CFLAGS = -std=c++11 -Wall -Wextra -pedantic -O3 -fopenmp
 LDFLAGS = -I/usr/lib -lpthread -lrt -lnuma
 BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt
 
-all: test_boost_umap
+all: test_boost_umap test test_numa_umap
 
 test_boost_umap: test_boost_umap.cpp
 	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)

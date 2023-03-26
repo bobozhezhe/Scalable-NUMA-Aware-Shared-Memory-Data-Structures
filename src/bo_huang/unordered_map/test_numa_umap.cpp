@@ -65,7 +65,10 @@ int main(int argc, char** argv) {
     double max_elapsed_time;
     MPI_Reduce(&elapsed_time, &max_elapsed_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (rank == 0) {
-        std::cout << "Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+        std::cout << "Rank 0 : emplace elapsed " << max_elapsed_time << " seconds" << std::endl;
+    }
+    else if(rank == 1) {
+        std::cout << "Rank 1 : emplace elapsed " << max_elapsed_time << " seconds" << std::endl;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -81,7 +84,10 @@ int main(int argc, char** argv) {
     MPI_Reduce(&elapsed_time, &max_elapsed_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if (rank == 0) {
-        std::cout << "Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+        std::cout << "Rank 0 : getting key elapsed " << max_elapsed_time << " seconds" << std::endl;
+    }
+    else if(rank == 1) {
+        std::cout << "Rank 1 : getting key elapsed " << max_elapsed_time << " seconds" << std::endl;
     }
 
     MPI_Finalize();
