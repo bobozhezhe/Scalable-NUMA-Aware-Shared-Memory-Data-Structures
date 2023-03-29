@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+#build folder
+src/bo_huang/unordered_map/build/
