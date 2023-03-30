@@ -3,6 +3,13 @@
 This is the log file for weekly job and plans.
 
 ---
+## Week 9 (30 Mar, 2023)
+
+1. Finished all the test cases. singly_linked_list_with_locking changes to no locking.
+
+## Week 8 (23 Mar, 2023)
+
+1. Finish most of the test cases, except the singly_linked_list_with_locking.
 
 ## Week 7 (16 Mar, 2023)
 
