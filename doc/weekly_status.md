@@ -13,9 +13,9 @@ This is the log file for weekly job and plans.
 
 ## Week 7 (16 Mar, 2023)
 
-1. Fix the Boost test case using unorder map.(Now we have a full case.)
-1. Write NUMA and Boost test cases for unorder_set.
-1. Write NUMA and Boost test cases for singly_linked_list_with_locking.
+1. Fix the Boost test case using unorder map.(Now we have a full case for one data-structure.)
+1. Finish Writing NUMA and Boost test cases for unorder_set.
+1. Trying to write NUMA and Boost test cases for singly_linked_list_with_locking.
 1. Change to CMake.
 
 ### Plan for week 8
@@ -38,7 +38,7 @@ This is the log file for weekly job and plans.
 
 ## Week 4 (23 Feb, 2023)
 
-Skipped, for the assignment and midterm exam.
+Skipped, for the too many assignments and midterm exam.
 
 ## Week 3 (16 Feb, 2023)
 
