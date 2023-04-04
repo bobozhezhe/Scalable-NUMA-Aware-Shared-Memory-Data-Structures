@@ -3,6 +3,13 @@
 This is the log file for weekly job and plans.
 
 ---
+
+## Week 10 (6 Apr, 2023)
+
+1. Connect to real NUMA server.
+1. Make all the code compile successfully and run on NUMA nodes.
+1. Measure the NUMA speed.
+
 ## Week 9 (30 Mar, 2023)
 
 1. Finished all the test cases. singly_linked_list_with_locking changes to no locking.
