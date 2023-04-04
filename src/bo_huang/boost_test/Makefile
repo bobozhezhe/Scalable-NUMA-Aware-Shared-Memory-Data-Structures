@@ -5,7 +5,7 @@ CFLAGS = -std=c++11 -Wall -Wextra -pedantic -O3 -fopenmp
 # -Werror 
 
 LDFLAGS = -I/usr/lib -lpthread -lrt -lnuma
-BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt
+BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt -lboost_thread
 
 all: test_numa_memcpy test_memcpy test_shared_mem test_interprocess test_boost
 
