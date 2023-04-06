@@ -67,12 +67,12 @@ int main(int argc, char **argv) {
 
     if (rank == 0) {
         std::cout << "Total elapsed time: " << total_elapsed_time * 1000 << " millisecond" << std::endl;
-    }
 
-    // Destroy the unordered_map and the shared memory segment
-    segment.destroy<unordered_map>(shared_unordered_map);
-    shared_memory_object::remove(shared_memory_name);
-    MPI_Finalize();
+        // Destroy the unordered_map and the shared memory segment
+        segment.destroy<unordered_map>(shared_unordered_map);
+        shared_memory_object::remove(shared_memory_name);
+        MPI_Finalize();
+    }
 
     return 0;
 }
