@@ -74,9 +74,12 @@ int main(int argc, char** argv) {
     }
 
 
-    // Destroy the unordered_set and the shared memory segment
-    segment.destroy<MyHashSet>("my_set");
-    shared_memory_object::remove(shm_name.c_str());
+    if (comm.rank() == 0) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // Destroy the unordered_set and the shared memory segment
+        segment.destroy<MyHashSet>("my_set");
+        shared_memory_object::remove(shm_name.c_str());
+    }
 
     return 0;
 }
