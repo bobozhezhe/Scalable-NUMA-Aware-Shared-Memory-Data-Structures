@@ -40,8 +40,8 @@ int main(int argc, char** argv) {
     // Construct the unordered_map in the shared memory
     MyHashMap* map = segment.construct<MyHashMap>("my_map")(segment.get_segment_manager());
 
-
-    // mpi_unordered_map<int, int> a;
+    // Synchronize the shared memory segment
+    // segment.shmem_barrier::operator()(comm);
 
     double start_time = MPI_Wtime();
     // Distribute emplace operations across all processes
@@ -54,6 +54,7 @@ int main(int argc, char** argv) {
     double max_elapsed_time;
 
     boost::mpi::reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
+
     // Synchronize the shared memory segment
     // segment.shmem_barrier::operator()(comm);
 
@@ -87,9 +88,12 @@ int main(int argc, char** argv) {
     }
 
 
-    // Destroy the unordered_map and the shared memory segment
-    segment.destroy<MyHashMap>("my_map");
-    shared_memory_object::remove(shm_name.c_str());
+    if (comm.rank() == 1) {
+        std::sleep(3);
+        // Destroy the unordered_map and the shared memory segment
+        segment.destroy<MyHashMap>("my_map");
+        shared_memory_object::remove(shm_name.c_str());
+    }
 
     return 0;
 }
