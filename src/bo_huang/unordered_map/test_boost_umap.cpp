@@ -9,6 +9,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <iostream>
 #include <vector>
+#include <thread>
 
 using namespace boost::interprocess;
 using namespace boost::mpi;
@@ -88,11 +89,13 @@ int main(int argc, char** argv) {
     }
 
 
-    if (comm.rank() == 1) {
-        std::sleep(3);
+    if (comm.rank() == 0) {
+        // std::sleep(3);
+        std::this_thread::sleep_for(std::chrono::seconds(3));
         // Destroy the unordered_map and the shared memory segment
         segment.destroy<MyHashMap>("my_map");
         shared_memory_object::remove(shm_name.c_str());
+        std::cout << "Rank 0: destroyed memory.";
     }
 
     return 0;
