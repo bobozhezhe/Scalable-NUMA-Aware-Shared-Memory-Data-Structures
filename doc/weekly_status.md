@@ -10,6 +10,8 @@ This is the log file for weekly job and plans.
 1. Make all the code compile successfully and run on NUMA nodes.
 1. Measure the NUMA speed.
 
+ssh -i ~/.ssh/scs_chameleon.dat cc@129.114.109.6
+
 ## Week 9 (30 Mar, 2023)
 
 1. Finished all the test cases. singly_linked_list_with_locking changes to no locking.
@@ -55,7 +57,7 @@ Skipped, for the too many assignments and midterm exam.
 1. Get the simple performance data of the case.
 1. Build a NUMA test case, but cannot pass compile.
 
-### Plan for week 3
+### Plan for week 4
 
 1. Build a OpenMPI test case.
 1. Each of us builds a test case based on a data structure, and tests the performance on shared memory or NUMA nodes.
