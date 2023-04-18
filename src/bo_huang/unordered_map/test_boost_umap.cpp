@@ -22,10 +22,8 @@ int main(int argc, char** argv) {
     const int MAP_LENGTH = 1024;
 
     // Initialize MPI
-    std::cout << "HERE1" << std::endl;
     boost::mpi::environment env(argc, argv);
     boost::mpi::communicator comm;
-    std::cout << "HERE2" << std::endl;
 
     int rank = comm.rank();
     // Define the shared memory name
@@ -33,21 +31,15 @@ int main(int argc, char** argv) {
     // Create or open the shared memory segment
     shared_memory_object::remove(shm_name.c_str());
     std::unique_ptr<boost::interprocess::managed_shared_memory> segment;
-    std::cout << "HERE3" << std::endl;
 
-    try {
-      if (rank == 0) {
-        segment = std::make_unique<boost::interprocess::managed_shared_memory>(
-          open_or_create, shm_name.c_str(), MEM_LENGTH);
-      }
-      comm.barrier();
-      if (rank != 0) {
-        segment = std::make_unique<boost::interprocess::managed_shared_memory>(
-          open_or_create, shm_name.c_str(), MEM_LENGTH);
-      }
-    } catch (std::exception &e) {
-      std::cout << "HERE1234" << std::endl;
-      std::cout << e.what() << std::endl;
+    if (rank == 0) {
+      segment = std::make_unique<boost::interprocess::managed_shared_memory>(
+        open_or_create, shm_name.c_str(), MEM_LENGTH);
+    }
+    comm.barrier();
+    if (rank != 0) {
+      segment = std::make_unique<boost::interprocess::managed_shared_memory>(
+        open_or_create, shm_name.c_str(), MEM_LENGTH);
     }
 
     // Define an allocator for the unordered_map
@@ -68,22 +60,17 @@ int main(int argc, char** argv) {
         segment->get_segment_manager());
     }
 
-    std::cout << "HERE5" << std::endl;
-
     double start_time = MPI_Wtime();
     // Distribute emplace operations across all processes
     if (rank == 0) {
       for (int i = 0; i < TIMES; ++i) {
         map->emplace(i, i);
-        // (*map)[i % MAP_LENGTH] = i;
       }
     }
     comm.barrier();
     double end_time = MPI_Wtime();
     double elapsed_time = end_time - start_time;
     double max_elapsed_time;
-
-    std::cout << "HERE6" << std::endl;
 
     boost::mpi::reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
@@ -105,7 +92,6 @@ int main(int argc, char** argv) {
     // Distribute get operations across all processes
     for (int i = rank; i < TIMES; i += NUM_PROCESSES) {
         int value = (*map)[i % MAP_LENGTH];
-
     }
     end_time = MPI_Wtime();
 
