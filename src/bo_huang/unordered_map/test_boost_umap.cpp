@@ -18,7 +18,7 @@ using namespace boost::mpi;
 int main(int argc, char** argv) {
     const int TIMES = 1000000;
     const int NUM_PROCESSES = 4;
-    const int MEM_LENGTH = 256 * (1 << 20);  // 32MB
+    const int MEM_LENGTH = 256 * (1 << 20);  // 256MB
     const int MAP_LENGTH = 1024;
 
     // Initialize MPI
