@@ -10,27 +10,45 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <memory>
 
 using namespace boost::interprocess;
 using namespace boost::mpi;
 
 int main(int argc, char** argv) {
-
     const int TIMES = 1000000;
     const int NUM_PROCESSES = 4;
-    const int MEM_LENGTH = 65536;
+    const int MEM_LENGTH = 256 * (1 << 20);  // 32MB
     const int MAP_LENGTH = 1024;
 
     // Initialize MPI
+    std::cout << "HERE1" << std::endl;
     boost::mpi::environment env(argc, argv);
     boost::mpi::communicator comm;
+    std::cout << "HERE2" << std::endl;
 
     int rank = comm.rank();
     // Define the shared memory name
     std::string shm_name = "my_shared_memory";
     // Create or open the shared memory segment
     shared_memory_object::remove(shm_name.c_str());
-    boost::interprocess::managed_shared_memory segment(open_or_create, shm_name.c_str(), MEM_LENGTH);
+    std::unique_ptr<boost::interprocess::managed_shared_memory> segment;
+    std::cout << "HERE3" << std::endl;
+
+    try {
+      if (rank == 0) {
+        segment = std::make_unique<boost::interprocess::managed_shared_memory>(
+          open_or_create, shm_name.c_str(), MEM_LENGTH);
+      }
+      comm.barrier();
+      if (rank != 0) {
+        segment = std::make_unique<boost::interprocess::managed_shared_memory>(
+          open_or_create, shm_name.c_str(), MEM_LENGTH);
+      }
+    } catch (std::exception &e) {
+      std::cout << "HERE1234" << std::endl;
+      std::cout << e.what() << std::endl;
+    }
 
     // Define an allocator for the unordered_map
     typedef boost::interprocess::allocator<std::pair<const int, int>, managed_shared_memory::segment_manager> ShmemAllocator;
@@ -39,25 +57,38 @@ int main(int argc, char** argv) {
     typedef boost::unordered_map<int, int, std::hash<int>, std::equal_to<int>, ShmemAllocator> MyHashMap;
 
     // Construct the unordered_map in the shared memory
-    MyHashMap* map = segment.construct<MyHashMap>("my_map")(segment.get_segment_manager());
+    MyHashMap *map;
+    if (rank == 0) {
+      map = segment->construct<MyHashMap>("my_map")(
+        segment->get_segment_manager());
+    }
+    comm.barrier();
+    if (rank != 0) {
+      map = segment->find_or_construct<MyHashMap>("my_map")(
+        segment->get_segment_manager());
+    }
 
-    // Synchronize the shared memory segment
-    // segment.shmem_barrier::operator()(comm);
+    std::cout << "HERE5" << std::endl;
 
     double start_time = MPI_Wtime();
     // Distribute emplace operations across all processes
-    for (int i = rank; i < TIMES; i += NUM_PROCESSES) {
-        // a.emplace(i, i);
-        (*map)[i % MAP_LENGTH] = i;
+    if (rank == 0) {
+      for (int i = 0; i < TIMES; ++i) {
+        map->emplace(i, i);
+        // (*map)[i % MAP_LENGTH] = i;
+      }
     }
+    comm.barrier();
     double end_time = MPI_Wtime();
     double elapsed_time = end_time - start_time;
     double max_elapsed_time;
 
+    std::cout << "HERE6" << std::endl;
+
     boost::mpi::reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
     // Synchronize the shared memory segment
-    // segment.shmem_barrier::operator()(comm);
+    // segment->shmem_barrier::operator()(comm);
 
 
     if (comm.rank() == 0) {
@@ -93,7 +124,7 @@ int main(int argc, char** argv) {
         // std::sleep(3);
         std::this_thread::sleep_for(std::chrono::seconds(3));
         // Destroy the unordered_map and the shared memory segment
-        segment.destroy<MyHashMap>("my_map");
+        segment->destroy<MyHashMap>("my_map");
         shared_memory_object::remove(shm_name.c_str());
         std::cout << "Rank 0: destroyed memory.";
     }
