@@ -3,7 +3,7 @@ GCC = g++
 CC = mpic++
 
 # Flags
-CFLAGS = -std=c++11 -Wall -Wextra -pedantic -O3 -fopenmp
+CFLAGS = -std=c++17 -Wall -Wextra -pedantic -O3 -fopenmp
 # -Werror 
 
 LDFLAGS = -I/usr/lib -lpthread -lrt -lnuma
