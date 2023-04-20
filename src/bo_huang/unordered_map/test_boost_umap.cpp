@@ -30,6 +30,8 @@ int main(int argc, char** argv) {
     std::string shm_name = "my_shared_memory";
     // Create or open the shared memory segment
     shared_memory_object::remove(shm_name.c_str());
+    comm.barrier();
+
     std::unique_ptr<boost::interprocess::managed_shared_memory> segment;
 
     if (rank == 0) {
