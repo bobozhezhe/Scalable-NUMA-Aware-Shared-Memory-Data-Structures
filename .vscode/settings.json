@@ -62,7 +62,10 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp",
+        "future": "cpp"
     },
     "workbench.colorCustomizations": {
         "activityBar.activeBackground": "#712a8e",
