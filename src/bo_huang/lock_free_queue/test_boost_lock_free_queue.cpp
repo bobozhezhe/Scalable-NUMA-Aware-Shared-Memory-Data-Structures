@@ -5,6 +5,9 @@
 #include <iostream>
 #include <memory>
 #include <thread>
+#include <numa.h>
+
+#include "../singly_linked_list/singly_linked_list.h"
 
 // using namespace boost::interprocess;
 // using namespace boost::mpi;
@@ -31,10 +34,13 @@ int main(int argc, char **argv)
     // boost::interprocess::managed_shared_memory segment(open_or_create, shm_name.c_str(), MEM_LENGTH);
     std::unique_ptr<boost::interprocess::managed_shared_memory> segment;
 
+    int node_id = 0;
+    void *ptr1 = numa_alloc_onnode(MEM_LENGTH, node_id);
+
     if (rank == 0)
     {
         segment = std::make_unique<boost::interprocess::managed_shared_memory>(
-            bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
+            bip::open_or_create, shm_name.c_str(), MEM_LENGTH, ptr1);
     }
     comm.barrier();
     if (rank != 0)
