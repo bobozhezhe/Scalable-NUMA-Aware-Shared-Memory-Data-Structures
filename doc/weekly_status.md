@@ -4,6 +4,12 @@ This is the log file for weekly job and plans.
 
 ---
 
+## Week 12 (20 Apr, 2023)
+
+1. Fix the bug, get the first right program.
+
+## Week 11 (13 Apr, 2023)
+
 ## Week 10 (6 Apr, 2023)
 
 1. Connect to real NUMA server.
