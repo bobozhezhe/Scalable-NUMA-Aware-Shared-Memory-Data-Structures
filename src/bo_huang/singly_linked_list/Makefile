@@ -17,7 +17,7 @@ numa_singly_LL: numa_singly_LL.cpp
 	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS) $(LDFLAGS)
 
 boost_singly_LL: boost_singly_LL.cpp
-	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
+	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS) $(LDFLAGS)
 
 test_boost_singly_linked_list: test_boost_singly_linked_list.cpp
 	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
