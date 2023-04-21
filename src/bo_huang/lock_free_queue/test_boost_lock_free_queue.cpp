@@ -35,10 +35,11 @@ int main(int argc, char **argv)
     std::unique_ptr<boost::interprocess::managed_shared_memory> segment;
 
     int node_id = 0;
-    void *ptr1 = numa_alloc_onnode(MEM_LENGTH, node_id);
+    void *ptr1;
 
     if (rank == 0)
     {
+        ptr1 = numa_alloc_onnode(MEM_LENGTH, node_id);
         segment = std::make_unique<boost::interprocess::managed_shared_memory>(
             bip::open_or_create, shm_name.c_str(), MEM_LENGTH, ptr1);
     }
@@ -126,6 +127,7 @@ int main(int argc, char **argv)
         segment->destroy<MyLockFreeQueue>("my_queue");
         bip::shared_memory_object::remove(shm_name.c_str());
         std::cout << "Rank 0: destroyed memory." << std::endl;
+        numa_free(ptr1, MEM_LENGTH);
     }
 
     return 0;
