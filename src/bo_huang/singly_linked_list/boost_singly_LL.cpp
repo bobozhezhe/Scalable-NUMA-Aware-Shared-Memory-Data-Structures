@@ -45,13 +45,14 @@ void print_list(List* arr, int node_num) {
     auto end_time1 = std::chrono::steady_clock::now(); // 结束计时访问当前节点
     auto elapsed_time1 = std::chrono::duration_cast<std::chrono::microseconds>(end_time1 - start_time1).count(); // 计算时间差
 
-    std::cout << "Node " << node_num << " <-> Node 0 :";
-    std::cout << "Elapsed time1: " << elapsed_time1 << " microseconds" << std::endl;
+    std::cout << "Node " << node_num << " <-> Node " << node_num;
+    std::cout << " - Elapsed time: " << elapsed_time1 << " microseconds" << std::endl;
 
     auto start_time2 = std::chrono::steady_clock::now(); // 开始计时访问另一节点
 
-    for (int i = 0; i < 10000; ++i) {
-        for (auto& node : arr[1 - node_num]) {
+    int other_node = 1 - node_num;
+    for (int i = 0; i < LOOP_NUM; ++i) {
+        for (auto& node : arr[other_node]) {
             value = node.val;
         }
     }
@@ -59,8 +60,8 @@ void print_list(List* arr, int node_num) {
     auto end_time2 = std::chrono::steady_clock::now(); // 结束计时访问另一节点
     auto elapsed_time2 = std::chrono::duration_cast<std::chrono::microseconds>(end_time2 - start_time2).count(); // 计算时间差
 
-    std::cout << "Node " << node_num << " <-> Node 1 :";
-    std::cout << "Elapsed time2: " << elapsed_time2 << " microseconds" << std::endl;
+    std::cout << "Node " << node_num << " <-> Node " << other_node;
+    std::cout << " - Elapsed time: " << elapsed_time2 << " microseconds" << std::endl;
 }
 
 int main() {
