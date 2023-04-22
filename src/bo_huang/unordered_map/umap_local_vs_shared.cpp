@@ -5,8 +5,9 @@
 #include <chrono>
 #include "../lib/numa_experience.h"
 
-const int EMPLACE_NUM = 100;
-const int AT_NUM = 100;
+const int EMPLACE_NUM   = 100;
+const int AT_NUM        = 100;
+const int MEM_LENGTH    = 256* (1 << 10);
 
 void test_boost_unordered_map()
 {
@@ -55,8 +56,7 @@ void test_shared_memory_boost_unordered_map()
     typedef bip::allocator<std::pair<const int, int>, bip::managed_shared_memory::segment_manager> ShmemAllocator;
     typedef boost::unordered_map<int, int, std::hash<int>, std::equal_to<int>, ShmemAllocator> MyMap;
 
-    const int NUM_PROCESSES = 4;
-    const int MEM_LENGTH = 64* (1 << 10);
+    // const int NUM_PROCESSES = 4;
 
     // Initialize MPI
     boost::mpi::environment env();
@@ -103,8 +103,8 @@ void test_shared_memory_boost_unordered_map()
 int main()
 {
     std::cout << "Emplace() ops : " << EMPLACE_NUM << " , At() ops : " << AT_NUM << std::endl;
-    // test_std_unordered_map();
-    // test_boost_unordered_map();
+    test_std_unordered_map();
+    test_boost_unordered_map();
     test_shared_memory_boost_unordered_map();
     return 0;
 }

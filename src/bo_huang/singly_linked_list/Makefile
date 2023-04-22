@@ -1,31 +1,42 @@
+# Compiler
+GCC = g++
 CC = mpic++
 
 # Flags
-CFLAGS = -std=c++11 -Wall -Wextra -pedantic -O3 -fopenmp
+CFLAGS = -std=c++17 -Wall -Wextra -pedantic -O3 -fopenmp
 # -Werror 
 
 LDFLAGS = -I/usr/lib -lpthread -lrt -lnuma
-
 BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt
 
-all: test_boost_singly_linked_list \
-	test_numa_singly_linked_list \
-	boost_singly_LL \
-	numa_singly_LL \
+SRCS := $(wildcard *.cpp)
+OBJS := $(SRCS:.cpp=.o)
+BINS := $(SRCS:.cpp=)
 
-numa_singly_LL: numa_singly_LL.cpp
-	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS) $(LDFLAGS)
 
-boost_singly_LL: boost_singly_LL.cpp
-	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS) $(LDFLAGS)
+all: $(BINS)
 
-test_boost_singly_linked_list: test_boost_singly_linked_list.cpp
-	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
-
-test_numa_singly_linked_list: test_numa_singly_linked_list.cpp
-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+%: %.cpp
+	$(CC) $(CXXFLAGS) $< -o $@ $(BOOST_LDFLAGS) $(LDFLAGS)
 
 clean:
-	rm -f *.o test_numa_singly_linked_list test_boost_singly_linked_list 
-	rm -f boost_singly_LL
-	rm -f numa_singly_LL
+	rm -f $(BINS)
+
+
+# local_vs_shared: local_vs_shared.cpp
+# 	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
+
+# std_vs_boost: std_vs_boost.cpp
+# 	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
+
+# test_boost_umap: test_boost_umap.cpp
+# 	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS)
+
+# test: test.cpp
+# 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+
+# test_numa_umap: test_numa_umap.cpp
+# 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+
+# clean:
+# 	rm -f test_numa_umap test test_boost_umap std_vs_boost std_vs_boost
