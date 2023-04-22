@@ -50,7 +50,7 @@ private:
     std::vector<std::unordered_map<Key, T>> node_maps_;
 };
 
-int run_unordered_map_numa(int argc, char **argv) {
+int main(int argc, char **argv) {
     const int TIMES = 1000000;
     const int num_numa_nodes = numa_max_node() + 1;
     const int step = num_numa_nodes;

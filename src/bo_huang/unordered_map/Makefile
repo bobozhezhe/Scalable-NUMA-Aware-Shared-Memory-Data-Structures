@@ -17,7 +17,7 @@ BINS := $(SRCS:.cpp=)
 all: $(BINS)
 
 %: %.cpp
-	$(CC) $(CXXFLAGS) $< -o $@ $(BOOST_LDFLAGS) $(LDFLAGS)
+	$(CC) $(CFLAGS) $< -o $@ $(BOOST_LDFLAGS) $(LDFLAGS)
 
 clean:
 	rm -f $(BINS)
