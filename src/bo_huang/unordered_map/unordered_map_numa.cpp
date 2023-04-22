@@ -99,6 +99,9 @@ int main(int argc, char **argv) {
         thread_read_other_times[omp_get_thread_num()] = t_elapsed_time;
         std::cout << "Thread " << thread_num << " on node " << node << " read node " << start_index << " get elapsed time: "
         << t_elapsed_time << " seconds" << std::endl;
+
+        // int node_checked = numa_node_of_addr(map);
+        // std::cout << "Checking ... Thread " << thread_num << " on node " << node_checked  << std::endl;
     }
 #pragma omp barrier
     int thread_num = omp_get_thread_num();
