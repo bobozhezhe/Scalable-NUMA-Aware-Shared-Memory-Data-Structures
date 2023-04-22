@@ -65,7 +65,8 @@
         "variant": "cpp",
         "any": "cpp",
         "codecvt": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "*.ipp": "cpp"
     },
     "workbench.colorCustomizations": {
         "activityBar.activeBackground": "#712a8e",
