@@ -14,7 +14,7 @@ typedef allocator<map_value_t, managed_shared_memory::segment_manager> map_alloc
 typedef map<int, std::string, std::less<int>, map_allocator_t> unordered_map;
 
 
-int run_unordered_map_shared_memory(int argc, char **argv) {
+int main(int argc, char **argv) {
     MPI_Init(&argc, &argv);
 
     int rank, size;
