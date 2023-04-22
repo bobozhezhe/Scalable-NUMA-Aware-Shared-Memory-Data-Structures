@@ -7,7 +7,7 @@ CFLAGS = -std=c++17 -Wall -Wextra -pedantic -O3 -fopenmp
 # -Werror 
 
 LDFLAGS = -I/usr/lib -lpthread -lrt -lnuma
-BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt
+BOOST_LDFLAGS = -lboost_serialization -lboost_mpi -lrt -lboost_thread
 
 SRCS := $(wildcard *.cpp)
 OBJS := $(SRCS:.cpp=.o)
