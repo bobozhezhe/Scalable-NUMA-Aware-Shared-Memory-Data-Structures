@@ -186,7 +186,7 @@ int main(int argc, char **argv)
     // int loop_num = 1000;
 
     const int kNumTests = 4;
-    constexpr int kNumIters[kNumTests] = {1000, 10000, 100000, 100};
+    constexpr int kNumIters[kNumTests] = {1000, 10000, 100000, 1000000};
 
     // Initialize MPI
     boost::mpi::environment env(argc, argv);
