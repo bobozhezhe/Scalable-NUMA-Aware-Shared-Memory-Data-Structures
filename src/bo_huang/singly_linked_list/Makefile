@@ -21,6 +21,7 @@ all: $(BINS)
 
 clean:
 	rm -f $(BINS)
+	rm -f *.csv
 
 
 # local_vs_shared: local_vs_shared.cpp

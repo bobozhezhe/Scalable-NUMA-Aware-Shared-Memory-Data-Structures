@@ -77,7 +77,6 @@ void test_boost_local()
     );
 }
 
-// // using namespace boost::interprocess;
 namespace bip = boost::interprocess;
 
 void test_shared_memory_boost()
