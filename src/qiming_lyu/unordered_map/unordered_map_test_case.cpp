@@ -6,6 +6,7 @@
 #include <mpi.h>
 #include <numa.h>
 #include <boost/interprocess/sync/named_mutex.hpp>
+#include <unordered_map>
 
 using namespace boost::interprocess;
 
@@ -24,6 +25,8 @@ int main(int argc, char **argv) {
     const char *shared_memory_name = "unordered_map_shared_memory";
     const char *shared_unordered_map = "my_shared_unordered_map";
     const std::size_t shared_memory_size = 256 * (1 << 20);
+    std::string count = argv[2];
+    int data_count = std::stoi(count);
     int cpu = sched_getcpu();
     int node = numa_node_of_cpu(cpu);
 
@@ -32,6 +35,7 @@ int main(int argc, char **argv) {
 
     unordered_map *shared_map = nullptr;
     managed_shared_memory *segment = nullptr;
+    std::unordered_map<int, std::string> stl_map;
     // Rank 0 creates the shared memory and initializes the map
     if (rank == 0) {
         std::cout << "rank " << rank << " on node " << node << " creating shared memory and initializing map..." << std::endl;
@@ -39,12 +43,26 @@ int main(int argc, char **argv) {
         segment = new managed_shared_memory(create_only, shared_memory_name, shared_memory_size);
         map_allocator_t map_allocator(segment->get_segment_manager());
         shared_map = segment->construct<unordered_map>(shared_unordered_map)(std::less<int>(), map_allocator);
-        for (int i = 0; i < 100000; ++i) {
+        for (int i = 0; i < data_count; ++i) {
             (*shared_map)[i] = std::to_string(i);
         }
 
         double end_time = MPI_Wtime();
-        std::cout << "rank " << rank << " on node " << node << " emplace elapsed time: " << (end_time - start_time)*1000 << " millisecond" << std::endl;
+        std::cout << "rank " << rank << " on node " << node << " data count " << data_count << " emplace shared_map elapsed time: " << (end_time - start_time)*1000 << " millisecond" << std::endl;
+
+        start_time = MPI_Wtime();
+        for (int i = 0; i < data_count; ++i) {
+            stl_map[i] = std::to_string(i);
+        }
+        end_time = MPI_Wtime();
+        std::cout << "rank " << rank << " on node " << node << " data count " << data_count << " emplace stl_set elapsed time: " << (end_time - start_time)*1000 << " millisecond" << std::endl;
+
+        start_time = MPI_Wtime();
+        for (auto it = stl_map.begin(); it != stl_map.end(); ++it) {
+            auto iterator = *it;
+        }
+        end_time = MPI_Wtime();
+        std::cout << "rank " << rank << " on node " << node << " read stl_set elapsed time: " << (end_time - start_time)*1000 << " millisecond" << std::endl;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -63,7 +81,7 @@ int main(int argc, char **argv) {
     }
     double end_time = MPI_Wtime();
     double elapsed_time = end_time - start_time;
-    std::cout << "rank " << rank << " on node " << node << " read elapsed time: " << elapsed_time * 1000 << " millisecond" << std::endl;
+    std::cout << "rank " << rank << " on node " << node << " read shared_map elapsed time: " << elapsed_time * 1000 << " millisecond" << std::endl;
 
     // Rank 0 prints the elapsed time
     double total_elapsed_time;
@@ -71,7 +89,7 @@ int main(int argc, char **argv) {
 
     MPI_Barrier(MPI_COMM_WORLD);
     if (rank == 0) {
-        std::cout << "Total elapsed time: " << total_elapsed_time * 1000 << " millisecond" << std::endl;
+        std::cout << "Total read shared_map elapsed time: " << total_elapsed_time * 1000 << " millisecond" << std::endl;
 
         // Destroy the unordered_map and the shared memory segment
         segment->destroy<unordered_map>(shared_unordered_map);

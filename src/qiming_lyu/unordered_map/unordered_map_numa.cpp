@@ -51,30 +51,39 @@ private:
 };
 
 int main(int argc, char **argv) {
-    const int TIMES = 1000000;
+    std::string count = argv[2];
+    int TIMES = std::stoi(count);
+    //get num of nodes
     const int num_numa_nodes = numa_max_node() + 1;
     const int step = num_numa_nodes;
     numa_unordered_map<int, int> *map = new numa_unordered_map<int, int>;
     double thread_read_local_times[num_numa_nodes];
     double thread_read_other_times[num_numa_nodes];
     double thread_write_times[num_numa_nodes];
+
+    //create the same number of threads as there are nodes
 #pragma omp parallel num_threads(num_numa_nodes)
     {
+        //each thread inserts data at the local node
         int thread_num = omp_get_thread_num();
         int node = thread_num % num_numa_nodes;
         numa_run_on_node(node);
 
-        double start_time = omp_get_wtime();
-        for (int i = thread_num; i < TIMES; i += step) {
-            map->emplace(i, i);
+        if (thread_num == 0) {
+            double start_time = omp_get_wtime();
+            for (int i = thread_num; i < TIMES; i++) {
+                map->emplace(i, i);
+            }
+            double end_time = omp_get_wtime();
+            double elapsed_time = end_time - start_time;
+            thread_write_times[omp_get_thread_num()] = elapsed_time;
+            std::cout << "Thread " << thread_num << " on node " << node << " data count " << TIMES << " emplace elapsed time: " << elapsed_time << " seconds" << std::endl;
         }
-        double end_time = omp_get_wtime();
-        double elapsed_time = end_time - start_time;
-        thread_write_times[omp_get_thread_num()] = elapsed_time;
-        std::cout << "Thread " << thread_num << " on node " << node << " emplace elapsed time: " << elapsed_time << " seconds" << std::endl;
+
 #pragma omp barrier
         std::cout << "map count " << map->size(node) << std::endl;
 
+        //first, reads the data from the local node
         double t_start_time = omp_get_wtime();
         int start_index = thread_num;
         for (int i = start_index; i < TIMES; i += step) {
@@ -83,24 +92,11 @@ int main(int argc, char **argv) {
         double t_end_time = omp_get_wtime();
         double t_elapsed_time = t_end_time - t_start_time;
         thread_read_local_times[omp_get_thread_num()] = t_elapsed_time;
-        std::cout << "Thread " << thread_num << " on node " << node << " read node " << start_index << " get elapsed time: "
+        std::cout << "Thread " << thread_num << " on node " << node << " read node 0" << " get elapsed time: "
                   << t_elapsed_time << " seconds" << std::endl;
-#pragma omp barrier
-        if (thread_num == 1) {
-            usleep(500000);  // 500ms = 500000us
-        }
-        t_start_time = omp_get_wtime();
-        start_index = (thread_num + 1) % num_numa_nodes;
-        for (int i = start_index; i < TIMES; i += step) {
-            map->get(i);
-        }
-        t_end_time = omp_get_wtime();
-        t_elapsed_time = t_end_time - t_start_time;
-        thread_read_other_times[omp_get_thread_num()] = t_elapsed_time;
-        std::cout << "Thread " << thread_num << " on node " << node << " read node " << start_index << " get elapsed time: "
-        << t_elapsed_time << " seconds" << std::endl;
     }
 #pragma omp barrier
+    // calculation execution time
     int thread_num = omp_get_thread_num();
     if (thread_num == 0) {
         double sum = 0;
