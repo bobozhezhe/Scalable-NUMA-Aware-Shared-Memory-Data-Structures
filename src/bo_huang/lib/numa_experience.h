@@ -4,11 +4,13 @@
 #define MEASURE_TIME_MPI(loop_code)                                                 \
     do                                                                              \
     {                                                                               \
+        double max_elapsed_time;                                                    \
         double start_time = MPI_Wtime();                                            \
         loop_code;                                                                  \
         double end_time = MPI_Wtime();                                              \
         double elapsed_time = end_time - start_time;                                \
-        std::cout << "- elapsed time: " << elapsed_time << " seconds" << std::endl; \
+        boost::mpi::reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0); \
+        std::cout << "- elapsed time: " << max_elapsed_time << " seconds" << std::endl; \
     } while (0)
 
 #define MEASURE_TIME_HIGH_RESOLUTION(loop_code)                                     \

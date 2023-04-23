@@ -9,6 +9,9 @@
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <boost/container/slist.hpp>
 #include <boost/mpi.hpp>
+#include <thread>
+#include <boost/unordered_map.hpp>
+
 namespace bip = boost::interprocess;
 
 const int MEM_LENGTH = 256 * (1 << 20);
@@ -25,24 +28,25 @@ const int MEM_LENGTH = 256 * (1 << 20);
     } while (0)
 
 template <typename T>
-void test_shm_cross_slist(int loop_num, std::vector<double> &times)
+int test_shm_cross_slist(int loop_num, std::vector<double> &times, int argc, char **argv)
 {
+
     const int TIMES = loop_num;
     const int NUM_PROCESSES = 4;
     const int MEM_LENGTH = 256 * (1 << 20); // 256MB
     const int MAP_LENGTH = 1024;
 
     // Initialize MPI
-    boost::mpi::environment env();
     boost::mpi::communicator comm;
 
     int rank = comm.rank();
     // Define the shared memory name
     std::string shm_name = "my_shared_memory";
     // Create or open the shared memory segment
+
     if (rank == 0)
     {
-        shared_memory_object::remove(shm_name.c_str());
+        bip::shared_memory_object::remove(shm_name.c_str());
     }
     comm.barrier();
 
@@ -51,17 +55,17 @@ void test_shm_cross_slist(int loop_num, std::vector<double> &times)
     if (rank == 0)
     {
         segment = std::make_unique<boost::interprocess::managed_shared_memory>(
-            open_or_create, shm_name.c_str(), MEM_LENGTH);
+            bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
     }
     comm.barrier();
     if (rank != 0)
     {
         segment = std::make_unique<boost::interprocess::managed_shared_memory>(
-            open_or_create, shm_name.c_str(), MEM_LENGTH);
+            bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
     }
 
     // Define an allocator for the unordered_map
-    typedef boost::interprocess::allocator<std::pair<const int, int>, managed_shared_memory::segment_manager> ShmemAllocator;
+    typedef boost::interprocess::allocator<std::pair<const int, int>, bip::managed_shared_memory::segment_manager> ShmemAllocator;
 
     // Define the unordered_map
     typedef boost::unordered_map<int, int, std::hash<int>, std::equal_to<int>, ShmemAllocator> MyHashMap;
@@ -99,14 +103,7 @@ void test_shm_cross_slist(int loop_num, std::vector<double> &times)
     // Synchronize the shared memory segment
     // segment->shmem_barrier::operator()(comm);
 
-    if (comm.rank() == 0)
-    {
-        std::cout << "Rank 0: Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    }
-    else if (comm.rank() == 1)
-    {
-        std::cout << "Rank 1: Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    }
+    std::cout << "Rank " << rank << ": Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
 
     boost::mpi::all_reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
 
@@ -121,14 +118,7 @@ void test_shm_cross_slist(int loop_num, std::vector<double> &times)
     elapsed_time = end_time - start_time;
     boost::mpi::reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
-    if (comm.rank() == 0)
-    {
-        std::cout << "Rank 0: Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    }
-    else if (comm.rank() == 1)
-    {
-        std::cout << "Rank 1: Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    }
+    std::cout << "Rank " << rank << ": Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
 
     if (comm.rank() == 0)
     {
@@ -136,34 +126,36 @@ void test_shm_cross_slist(int loop_num, std::vector<double> &times)
         std::this_thread::sleep_for(std::chrono::seconds(3));
         // Destroy the unordered_map and the shared memory segment
         segment->destroy<MyHashMap>("my_map");
-        shared_memory_object::remove(shm_name.c_str());
+        bip::shared_memory_object::remove(shm_name.c_str());
         std::cout << "Rank 0: destroyed memory.";
     }
 
     return 0;
+
 }
 
-int main()
+int main(int argc, char **argv)
 {
     std::vector<double> times;
     // int loop_num = 1000;
 
     const int kNumTests = 4;
-    constexpr int kNumIters[kNumTests] = {1000, 10000, 100000, 1000000};
+    constexpr int kNumIters[kNumTests] = {1000, 10000, 1000, 10};
     std::ofstream file("shm_results.csv");
 
     // test
     int row = 0;
     // table header
     file << "container,datatype,operation,loop_num,time(us)" << std::endl;
+    boost::mpi::environment env(argc, argv);
     for (int i = 0; i < kNumTests; i++)
     {
         int loop_num = kNumIters[i];
         std::cout << "boost::container::slist on shared_memory loop = " << loop_num << std::endl;
 
-        test_shm_cross_slist<int>(loop_num, times);
-        test_shm_cross_slist<double>(loop_num, times);
-        test_shm_cross_slist<std::vector<int>>(loop_num, times);
+        test_shm_cross_slist<int>(loop_num, times, argc, argv);
+        test_shm_cross_slist<double>(loop_num, times, argc, argv);
+        test_shm_cross_slist<std::vector<int>>(loop_num, times, argc, argv);
 
         std::string container_names[1] = {"boost::intrusive::slist"};
         std::string datatype_names[3] = {typeid(int).name(), typeid(double).name(), typeid(std::vector<int>).name()};
@@ -181,6 +173,7 @@ int main()
             }
         }
     }
+    MPI_Finalize();
 
     file.close();
 
