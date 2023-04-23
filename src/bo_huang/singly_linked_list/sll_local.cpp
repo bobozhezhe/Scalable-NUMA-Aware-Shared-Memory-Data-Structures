@@ -113,7 +113,7 @@ int main()
     // test
     int row = 0;
     // table header
-    file << "container,type,operation,loop_num,time(us)" << std::endl;
+    file << "container,datatype,operation,loop_num,time(us)" << std::endl;
     for (int i = 0; i < kNumTests; i++)
     {
         int loop_num = kNumIters[i];
