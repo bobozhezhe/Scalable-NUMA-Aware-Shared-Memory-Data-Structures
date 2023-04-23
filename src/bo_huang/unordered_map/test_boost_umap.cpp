@@ -90,14 +90,7 @@ int main(int argc, char **argv)
     // Synchronize the shared memory segment
     // segment->shmem_barrier::operator()(comm);
 
-    if (comm.rank() == 0)
-    {
-        std::cout << "Rank 0: Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    }
-    else if (comm.rank() == 1)
-    {
-        std::cout << "Rank 1: Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    }
+    std::cout << "Rank " << rank << ": Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
 
     boost::mpi::all_reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
 
@@ -112,14 +105,8 @@ int main(int argc, char **argv)
     elapsed_time = end_time - start_time;
     boost::mpi::reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
-    if (comm.rank() == 0)
-    {
-        std::cout << "Rank 0: Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    }
-    else if (comm.rank() == 1)
-    {
-        std::cout << "Rank 1: Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    }
+    std::cout << "Rank "<< rank << ": Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+
 
     if (comm.rank() == 0)
     {
