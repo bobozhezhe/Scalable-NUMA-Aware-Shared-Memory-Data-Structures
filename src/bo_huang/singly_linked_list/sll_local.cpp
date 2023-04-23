@@ -108,7 +108,11 @@ int main()
 
     const int kNumTests = 4;
     constexpr int kNumIters[kNumTests] = {1000, 10000, 100000, 1000000};
-    std::ofstream file("local_results.csv");
+    std::ofstream file("../../../data/local_results.csv");
+
+    std::string container_names[3] = {"std::forward_list", "std::vector", "std::list"};
+    std::string datatype_names[3] = {typeid(int).name(), typeid(double).name(), typeid(std::vector<int>).name()};
+    std::string operation_names[3] = {"push_back", "read", "erase"};
 
     // test
     int row = 0;
@@ -121,7 +125,6 @@ int main()
         // }
 
         // 测试 std::forward_list
-        // std::cout << "std::forward_list<int> test:" << std::endl;
         test_std_forward_list<int>(loop_num, times);
         test_std_forward_list<double>(loop_num, times);
         test_std_forward_list<std::vector<int>>(loop_num, times);
@@ -135,10 +138,6 @@ int main()
         test_std_list<int>(loop_num, times);
         test_std_list<double>(loop_num, times);
         test_std_list<std::vector<int>>(loop_num, times);
-
-        std::string container_names[3] = {"std::forward_list", "std::vector", "std::list"};
-        std::string datatype_names[3] = {typeid(int).name(), typeid(double).name(), typeid(std::vector<int>).name()};
-        std::string operation_names[3] = {"push_front/pop_front", "push_back/pop_back", "push_back/erase"};
 
         for (int container_num = 0; container_num < 3; container_num++)
         {
