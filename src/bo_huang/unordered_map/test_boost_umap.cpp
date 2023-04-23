@@ -105,8 +105,7 @@ int main(int argc, char **argv)
     elapsed_time = end_time - start_time;
     boost::mpi::reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
-    std::cout << "Rank "<< rank << ": Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-
+    std::cout << "Rank " << rank << ": Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
 
     if (comm.rank() == 0)
     {

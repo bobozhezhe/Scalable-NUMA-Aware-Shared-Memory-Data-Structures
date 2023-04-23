@@ -26,6 +26,7 @@ int main(int argc, char **argv)
         MPI_Abort(MPI_COMM_WORLD, -1);
     }
 
+    // get the cpu id and node
     int cpu = sched_getcpu();
     int node = numa_node_of_cpu(cpu);
     printf("Process %d is running on CPU %d", rank, cpu);
