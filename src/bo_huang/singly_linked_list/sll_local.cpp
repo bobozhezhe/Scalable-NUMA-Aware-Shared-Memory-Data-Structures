@@ -35,9 +35,13 @@ void test_std_forward_list(int loop_num)
     std::cout << "std::forward_list erase_after() with " << loop_num << " elements" << std::endl;
     MEASURE_TIME_HIGH_RESOLUTION(
         for (auto it = l.before_begin(); it != l.end();) {
+            if (std::next(it) == l.end()) { // 如果 it 后面没有元素，退出循环
+                break;
+            }
             it = l.erase_after(it);
         });
 }
+
 
 int main()
 {
