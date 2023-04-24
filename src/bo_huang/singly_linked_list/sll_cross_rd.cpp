@@ -271,7 +271,7 @@ int main(int argc, char **argv)
     int cpu = sched_getcpu();
     int node = numa_node_of_cpu(cpu);
     std::stringstream filename;
-    filename << "../../../data/cross_results_rank_" << rank << "_on_node_" << node << ".csv";
+    filename << "../../../data/cross_rd_results_rank_" << rank << "_on_node_" << node << ".csv";
     std::ofstream file(filename.str());
 
     // test
