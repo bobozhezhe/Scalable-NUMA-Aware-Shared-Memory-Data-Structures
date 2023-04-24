@@ -106,7 +106,6 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
         }
         // );
     }
-    pComm->barrier();
     double end_time = MPI_Wtime();
     double elapsed_time = end_time - start_time;
     double max_elapsed_time;
@@ -116,6 +115,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
 
+    pComm->barrier();
     boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
 
     // Read performance test
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
     int cpu = sched_getcpu();
     int node = numa_node_of_cpu(cpu);
     std::stringstream filename;
-    filename << "cross_results_rank_" << rank << "_on_node_" << node << ".csv";
+    filename << "../../../data/cross_results_rank_" << rank << "_on_node_" << node << ".csv";
     std::ofstream file(filename.str());
 
 

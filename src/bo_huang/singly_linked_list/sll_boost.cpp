@@ -69,7 +69,7 @@ int main()
 
     const int kNumTests = 4;
     constexpr int kNumIters[kNumTests] = {1000, 10000, 100000, 1000000};
-    std::ofstream file("boost_results.csv");
+    std::ofstream file("../../../data/boost_results.csv");
 
     // test
     int row = 0;
@@ -89,7 +89,7 @@ int main()
 
         std::string container_names[1] = {"boost::intrusive::slist"};
         std::string datatype_names[3] = {typeid(int).name(), typeid(double).name(), typeid(std::vector<int>).name()};
-        std::string operation_names[3] = {"push_front", "read", "push_back/erase"};
+        std::string operation_names[3] = {"push_front", "read", "erase"};
 
         for (int container_num = 0; container_num < 1; container_num++)
         {

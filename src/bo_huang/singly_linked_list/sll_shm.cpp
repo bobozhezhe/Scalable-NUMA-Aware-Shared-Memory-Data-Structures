@@ -73,7 +73,7 @@ int main()
 
     const int kNumTests = 4;
     constexpr int kNumIters[kNumTests] = {1000, 10000, 100000, 1000000};
-    std::ofstream file("shm_results.csv");
+    std::ofstream file("../../../data/shm_results.csv");
 
     // test
     int row = 0;
