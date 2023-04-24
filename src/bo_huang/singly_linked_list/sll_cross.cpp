@@ -12,7 +12,7 @@
 #include <thread>
 #include <numa.h>
 #include <sstream>
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/named_mutex.hpp>
 
 namespace bip = boost::interprocess;
 
@@ -81,14 +81,15 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     {
         slist = segment->construct<MySlist>("my_list")(segment->get_segment_manager());
         // mutex = segment->construct<bip::interprocess_mutex>("mutex")();
-        mutex = segment->construct<bip::named_mutex>("mutex")("shared_mutex");
+        mutex = segment->find_or_construct<bip::named_mutex>("mutex")(bip::open_or_create, "named_mutex_name");
+        // mutex = new named_mutex{open_or_create, "mutex"};
     }
     pComm->barrier();
     if (rank != 0)
     {
         slist = segment->find_or_construct<MySlist>("my_list")(segment->get_segment_manager());
         // mutex = segment->find_or_construct<bip::interprocess_mutex>("mutex")();
-        mutex = segment->find_or_construct<bip::named_mutex>("mutex")("shared_mutex");
+        mutex = segment->find_or_construct<bip::named_mutex>("mutex")(bip::open_or_create, "named_mutex_name");
     }
 
     // get the cpu id and node id
