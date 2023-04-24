@@ -122,13 +122,15 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
     std::cout << "Emplace barrier elapsed time: " << max_elapsed_time * 1000 * 1000 << " microseconds" << std::endl;
 
+    // Acquire the mutex
+    bip::interprocess_mutex* mutex = segment->find_or_construct<bip::interprocess_mutex>("mutex")();
+    mutex->lock();
+    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+    std::cout << "Get mutex_lock ... " << std::endl;
+
     // Read performance test
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "boost::container::slist on shared_memory read ";
-
-    bip::interprocess_mutex* mutex = segment.find_or_construct<interprocess_mutex>("mutex")();
-    // Acquire the mutex
-    mutex->lock();
 
     start_time = MPI_Wtime();
     // Distribute get operations across all processes
@@ -144,6 +146,8 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
 
     // Release the mutex
     mutex->unlock();
+    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+    std::cout << "Unclock mutex_lock ... " << std::endl;
 
     elapsed_time = end_time - start_time;
 
