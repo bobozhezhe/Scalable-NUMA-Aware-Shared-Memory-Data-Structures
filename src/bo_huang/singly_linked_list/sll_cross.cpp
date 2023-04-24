@@ -12,6 +12,7 @@
 #include <thread>
 #include <numa.h>
 #include <sstream>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
 
 namespace bip = boost::interprocess;
 
@@ -125,16 +126,9 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "boost::container::slist on shared_memory read ";
 
-    // Define the MPI window object
-    MPI_Win win;
-    MPI_Win_create(&shared_slist, sizeof(slist<int>), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
-
-    // Define the MPI lock object
-    MPI_Win_lock_all(0, win);
-
-    // Insert an element into the slist
-    int element = rank;
-    MPI_Win_lock(MPI_LOCK_EXCLUSIVE, rank, 0, win);
+    bip::interprocess_mutex* mutex = segment.find_or_construct<interprocess_mutex>("mutex")();
+    // Acquire the mutex
+    mutex->lock();
 
     start_time = MPI_Wtime();
     // Distribute get operations across all processes
@@ -147,7 +141,9 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     //     int value = (*map)[i % MAP_LENGTH];
     // }
     end_time = MPI_Wtime();
-    MPI_Win_unlock(rank, win);
+
+    // Release the mutex
+    mutex->unlock();
 
     elapsed_time = end_time - start_time;
 
