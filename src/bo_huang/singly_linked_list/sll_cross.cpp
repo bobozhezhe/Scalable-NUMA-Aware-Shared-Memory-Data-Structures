@@ -51,17 +51,19 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     pComm->barrier();
 
     std::unique_ptr<boost::interprocess::managed_shared_memory> segment;
+    std::unique_ptr<boost::interprocess::named_mutex> mutex;
 
     if (rank == 0)
     {
-        segment = std::make_unique<boost::interprocess::managed_shared_memory>(
-            bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
+        segment = std::make_unique<boost::interprocess::managed_shared_memory>(bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
+        mutex = std::make_unique<boost::interprocess::named_mutex>(bip::open_or_create, "named_mutex_name");
+        // mutex = segment->find_or_construct<bip::named_mutex>("mutex")(bip::open_or_create, "named_mutex_name");
     }
     pComm->barrier();
     if (rank != 0)
     {
-        segment = std::make_unique<boost::interprocess::managed_shared_memory>(
-            bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
+        segment = std::make_unique<boost::interprocess::managed_shared_memory>(bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
+        mutex = std::make_unique<boost::interprocess::named_mutex>(bip::open_or_create, "named_mutex_name");
     }
 
     // Define an allocator for the unordered_map
@@ -75,21 +77,18 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     // Construct the unordered_map in the shared memory
     // MyHashMap *map;
     MySlist *slist;
-    bip::named_mutex* mutex;
+    // bip::named_mutex* mutex;
 
     if (rank == 0)
     {
         slist = segment->construct<MySlist>("my_list")(segment->get_segment_manager());
-        // mutex = segment->construct<bip::interprocess_mutex>("mutex")();
-        mutex = segment->find_or_construct<bip::named_mutex>("mutex")(bip::open_or_create, "named_mutex_name");
-        // mutex = new named_mutex{open_or_create, "mutex"};
+        // mutex = segment->find_or_construct<bip::named_mutex>("mutex")(bip::open_or_create, "named_mutex_name");
     }
     pComm->barrier();
     if (rank != 0)
     {
         slist = segment->find_or_construct<MySlist>("my_list")(segment->get_segment_manager());
-        // mutex = segment->find_or_construct<bip::interprocess_mutex>("mutex")();
-        mutex = segment->find_or_construct<bip::named_mutex>("mutex")(bip::open_or_create, "named_mutex_name");
+        // mutex = segment->find_or_construct<bip::named_mutex>("mutex")(bip::open_or_create, "named_mutex_name");
     }
 
     // get the cpu id and node id
