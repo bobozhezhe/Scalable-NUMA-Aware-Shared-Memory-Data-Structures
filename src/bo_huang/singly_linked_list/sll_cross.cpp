@@ -95,7 +95,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     if (rank == 0)
     {
         std::cout << "[Rank "<< rank << " on node " << node << ":] ";
-        std::cout << "build slist on node " << std::endl;
+        std::cout << "building slist ... " << std::endl;
         std::cout << "boost::container::slist on shared_memory push_front ";
         // MEASURE_TIME_MPI(
         start_time = MPI_Wtime();
@@ -108,16 +108,18 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     }
     double end_time = MPI_Wtime();
     double elapsed_time = end_time - start_time;
-    double max_elapsed_time;
-    boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
-    double max_elapsed_time_ms = max_elapsed_time * 1000 * 1000;
+    double max_elapsed_time_ms = elapsed_time * 1000 * 1000;
     times.push_back(max_elapsed_time_ms);
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "Emplace elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
 
+
     pComm->barrier();
+    double max_elapsed_time;
+    boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
     boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
+    std::cout << "Emplace barrier elapsed time: " << max_elapsed_time << " seconds" << std::endl;
 
     // Read performance test
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
@@ -135,15 +137,17 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     end_time = MPI_Wtime();
 
     elapsed_time = end_time - start_time;
-    boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
-    max_elapsed_time_ms = max_elapsed_time * 1000 * 1000;
+    max_elapsed_time_ms = elapsed_time * 1000 * 1000;
     times.push_back(max_elapsed_time_ms);
     std::cout << "Getting key elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
 
-    boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
 
     pComm->barrier();
+    boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
+    boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
+    std::cout << "Read barrier elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "begin to erase.... " << std::endl;
     // Deletion performance test
@@ -160,15 +164,18 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     };
     end_time = MPI_Wtime();
     elapsed_time = end_time - start_time;
-    boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
-    max_elapsed_time_ms = max_elapsed_time * 1000 * 1000;
+    max_elapsed_time_ms = elapsed_time * 1000 * 1000;
     times.push_back(max_elapsed_time_ms);
     std::cout << "Getting key elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
 
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "Finish erase.... " << std::endl;
+
     pComm->barrier();
+    boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
+    std::cout << "Erase barrier elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+
     if (rank == 0)
     {
         // std::sleep(3);
