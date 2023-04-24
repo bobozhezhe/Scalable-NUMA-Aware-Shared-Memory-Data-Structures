@@ -75,18 +75,20 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     // Construct the unordered_map in the shared memory
     // MyHashMap *map;
     MySlist *slist;
-    bip::interprocess_mutex* mutex;
+    bip::named_mutex* mutex;
 
     if (rank == 0)
     {
         slist = segment->construct<MySlist>("my_list")(segment->get_segment_manager());
-        mutex = segment->construct<bip::interprocess_mutex>("mutex")();
+        // mutex = segment->construct<bip::interprocess_mutex>("mutex")();
+        mutex = segment->construct<bip::named_mutex>("mutex")("shared_mutex");
     }
     pComm->barrier();
     if (rank != 0)
     {
         slist = segment->find_or_construct<MySlist>("my_list")(segment->get_segment_manager());
-        mutex = segment->find_or_construct<bip::interprocess_mutex>("mutex")();
+        // mutex = segment->find_or_construct<bip::interprocess_mutex>("mutex")();
+        mutex = segment->find_or_construct<bip::named_mutex>("mutex")("shared_mutex");
     }
 
     // get the cpu id and node id
