@@ -75,16 +75,18 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     // Construct the unordered_map in the shared memory
     // MyHashMap *map;
     MySlist *slist;
+    bip::interprocess_mutex* mutex;
+
     if (rank == 0)
     {
-        slist = segment->construct<MySlist>("my_list")(
-            segment->get_segment_manager());
+        slist = segment->construct<MySlist>("my_list")(segment->get_segment_manager());
+        mutex = segment->construct<bip::interprocess_mutex>("mutex")();
     }
     pComm->barrier();
     if (rank != 0)
     {
-        slist = segment->find_or_construct<MySlist>("my_list")(
-            segment->get_segment_manager());
+        slist = segment->find_or_construct<MySlist>("my_list")(segment->get_segment_manager());
+        mutex = segment->find_or_construct<bip::interprocess_mutex>("mutex")();
     }
 
     // get the cpu id and node id
@@ -123,14 +125,9 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     std::cout << "Emplace barrier elapsed time: " << max_elapsed_time * 1000 * 1000 << " microseconds" << std::endl;
 
     // Acquire the mutex
-    bip::interprocess_mutex* mutex = segment->find_or_construct<bip::interprocess_mutex>("mutex")();
     mutex->lock();
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "Get mutex_lock ... " << std::endl;
-
-    // Read performance test
-    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
-    std::cout << "boost::container::slist on shared_memory read ";
 
     start_time = MPI_Wtime();
     // Distribute get operations across all processes
@@ -153,6 +150,10 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
 
     max_elapsed_time_ms = elapsed_time * 1000 * 1000;
     times.push_back(max_elapsed_time_ms);
+
+    // Read performance test
+    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+    std::cout << "boost::container::slist on shared_memory read ";
     std::cout << "Getting key elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
 
 
