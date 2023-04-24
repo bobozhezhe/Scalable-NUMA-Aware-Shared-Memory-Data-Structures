@@ -111,9 +111,10 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     double max_elapsed_time;
     boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
 
-    times.push_back(max_elapsed_time * 1000 * 1000);
+    double max_elapsed_time_ms = max_elapsed_time * 1000 * 1000;
+    times.push_back(max_elapsed_time_ms);
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
-    std::cout << "Emplace elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+    std::cout << "Emplace elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
 
     pComm->barrier();
     boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
@@ -135,8 +136,10 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
 
     elapsed_time = end_time - start_time;
     boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
-    std::cout << "Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    times.push_back(max_elapsed_time * 1000 * 1000);
+
+    max_elapsed_time_ms = max_elapsed_time * 1000 * 1000;
+    times.push_back(max_elapsed_time_ms);
+    std::cout << "Getting key elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
 
     boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
 
@@ -158,8 +161,10 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     end_time = MPI_Wtime();
     elapsed_time = end_time - start_time;
     boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
-    std::cout << "Getting key elapsed time: " << max_elapsed_time << " seconds" << std::endl;
-    times.push_back(max_elapsed_time * 1000 * 1000);
+
+    max_elapsed_time_ms = max_elapsed_time * 1000 * 1000;
+    times.push_back(max_elapsed_time_ms);
+    std::cout << "Getting key elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
 
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "Finish erase.... " << std::endl;
