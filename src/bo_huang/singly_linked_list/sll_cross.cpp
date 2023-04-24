@@ -51,19 +51,20 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     pComm->barrier();
 
     std::unique_ptr<boost::interprocess::managed_shared_memory> segment;
-    std::unique_ptr<boost::interprocess::named_mutex> mutex;
+    // std::unique_ptr<boost::interprocess::named_mutex> mutex;
+
+    // boost::interprocess::named_mutex m_mutex(boost::interprocess::open_or_create, "my_named_mutex"), *mutex = &m_mutex;
 
     if (rank == 0)
     {
         segment = std::make_unique<boost::interprocess::managed_shared_memory>(bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
-        mutex = std::make_unique<boost::interprocess::named_mutex>(bip::open_or_create, "named_mutex_name");
-        // mutex = segment->find_or_construct<bip::named_mutex>("mutex")(bip::open_or_create, "named_mutex_name");
+        // mutex = std::make_unique<boost::interprocess::named_mutex>(bip::open_or_create, "named_mutex_name");
     }
     pComm->barrier();
     if (rank != 0)
     {
         segment = std::make_unique<boost::interprocess::managed_shared_memory>(bip::open_or_create, shm_name.c_str(), MEM_LENGTH);
-        mutex = std::make_unique<boost::interprocess::named_mutex>(bip::open_or_create, "named_mutex_name");
+        // mutex = std::make_unique<boost::interprocess::named_mutex>(bip::open_or_create, "named_mutex_name");
     }
 
     // Define an allocator for the unordered_map
@@ -99,7 +100,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     // Distribute emplace operations across all processes
     if (rank == 0)
     {
-        std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";
         std::cout << "building slist ... " << std::endl;
         std::cout << "boost::container::slist on shared_memory push_front ";
         // MEASURE_TIME_MPI(
@@ -116,9 +117,8 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
 
     double max_elapsed_time_ms = elapsed_time * 1000 * 1000;
     times.push_back(max_elapsed_time_ms);
-    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+    std::cout << "[Rank " << rank << " on node " << node << ":] ";
     std::cout << "Emplace elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
-
 
     pComm->barrier();
     double max_elapsed_time;
@@ -127,26 +127,71 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     std::cout << "Emplace barrier elapsed time: " << max_elapsed_time * 1000 * 1000 << " microseconds" << std::endl;
 
     // Acquire the mutex
-    mutex->lock();
-    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
-    std::cout << "Get mutex_lock ... " << std::endl;
+    // mutex->lock();
+    // std::cout << "[Rank " << rank << " on node " << node << ":] ";
+    // std::cout << "Get mutex_lock ... " << std::endl;
 
-    start_time = MPI_Wtime();
-    // Distribute get operations across all processes
-    for (auto it = slist->begin(); it != slist->end(); ++it)
+    if (rank == 0)
     {
-        int value = *it;
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";
+        std::cout << "Begin read ... ";
+        start_time = MPI_Wtime();
+        // Distribute get operations across all processes
+        for (auto it = slist->begin(); it != slist->end(); ++it)
+        {
+            int value = *it;
+        }
+        end_time = MPI_Wtime();
+        std::cout << "Finish read ... " << std::endl;
     }
-    // for (int i = rank; i < TIMES; i += NUM_PROCESSES)
-    // {
-    //     int value = (*map)[i % MAP_LENGTH];
-    // }
-    end_time = MPI_Wtime();
+    pComm->barrier();
+    if (rank == 1)
+    {
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";
+        std::cout << "Begin read ... ";
+        start_time = MPI_Wtime();
+        // Distribute get operations across all processes
+        for (auto it = slist->begin(); it != slist->end(); ++it)
+        {
+            int value = *it;
+        }
+        end_time = MPI_Wtime();
+        std::cout << "Finish read ... " << std::endl;
+    }
+    pComm->barrier();
+    if (rank == 2)
+    {
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";
+        std::cout << "Begin read ... ";
+        start_time = MPI_Wtime();
+        // Distribute get operations across all processes
+        for (auto it = slist->begin(); it != slist->end(); ++it)
+        {
+            int value = *it;
+        }
+        end_time = MPI_Wtime();
+        std::cout << "Finish read ... " << std::endl;
+    }
+    pComm->barrier();
+    if (rank == 3)
+    {
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";
+        std::cout << "Begin read ... ";
+        start_time = MPI_Wtime();
+        // Distribute get operations across all processes
+        for (auto it = slist->begin(); it != slist->end(); ++it)
+        {
+            int value = *it;
+        }
+        end_time = MPI_Wtime();
+        std::cout << "Finish read ... " << std::endl;
+    }
+    pComm->barrier();
 
     // Release the mutex
-    mutex->unlock();
-    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
-    std::cout << "Unclock mutex_lock ... " << std::endl;
+    // mutex->unlock();
+    // std::cout << "[Rank " << rank << " on node " << node << ":] ";
+    // std::cout << "Unclock mutex_lock ... " << std::endl;
 
     elapsed_time = end_time - start_time;
 
@@ -154,29 +199,29 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     times.push_back(max_elapsed_time_ms);
 
     // Read performance test
-    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+    std::cout << "[Rank " << rank << " on node " << node << ":] ";
     std::cout << "boost::container::slist on shared_memory read ";
     std::cout << "Getting key elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
-
 
     pComm->barrier();
     boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
     boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
     std::cout << "Read barrier elapsed time: " << max_elapsed_time * 1000 * 1000 << " microseconds" << std::endl;
 
-    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+    std::cout << "[Rank " << rank << " on node " << node << ":] ";
     std::cout << "begin to erase.... " << std::endl;
     // Deletion performance test
     start_time = MPI_Wtime();
     if (rank == 0)
     {
-        std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";
         std::cout << "boost::container::slist on shared_memory erase ";
         // MEASURE_TIME_MPI(
-            for (auto it = slist->begin(); it != slist->end();) {
-                it = slist->erase(it);
-            }
-            // );
+        for (auto it = slist->begin(); it != slist->end();)
+        {
+            it = slist->erase(it);
+        }
+        // );
     };
     end_time = MPI_Wtime();
     elapsed_time = end_time - start_time;
@@ -185,7 +230,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     times.push_back(max_elapsed_time_ms);
     std::cout << "Getting key elapsed time: " << max_elapsed_time_ms << " microseconds" << std::endl;
 
-    std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+    std::cout << "[Rank " << rank << " on node " << node << ":] ";
     std::cout << "Finish erase.... " << std::endl;
 
     pComm->barrier();
@@ -199,7 +244,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
         // Destroy the unordered_map and the shared memory segment
         segment->destroy<MySlist>("my_list");
         bip::shared_memory_object::remove(shm_name.c_str());
-        std::cout << "[Rank "<< rank << " on node " << node << ":] ";
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";
         std::cout << "Destroyed memory." << std::endl;
     }
 
@@ -228,7 +273,6 @@ int main(int argc, char **argv)
     std::stringstream filename;
     filename << "../../../data/cross_results_rank_" << rank << "_on_node_" << node << ".csv";
     std::ofstream file(filename.str());
-
 
     // test
     int row = 0;
