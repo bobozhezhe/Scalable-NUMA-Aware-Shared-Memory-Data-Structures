@@ -124,6 +124,18 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     // Read performance test
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "boost::container::slist on shared_memory read ";
+
+    // Define the MPI window object
+    MPI_Win win;
+    MPI_Win_create(&shared_slist, sizeof(slist<int>), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+
+    // Define the MPI lock object
+    MPI_Win_lock_all(0, win);
+
+    // Insert an element into the slist
+    int element = rank;
+    MPI_Win_lock(MPI_LOCK_EXCLUSIVE, rank, 0, win);
+
     start_time = MPI_Wtime();
     // Distribute get operations across all processes
     for (auto it = slist->begin(); it != slist->end(); ++it)
@@ -135,6 +147,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     //     int value = (*map)[i % MAP_LENGTH];
     // }
     end_time = MPI_Wtime();
+    MPI_Win_unlock(rank, win);
 
     elapsed_time = end_time - start_time;
 
