@@ -119,7 +119,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     double max_elapsed_time;
     boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
     boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
-    std::cout << "Emplace barrier elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+    std::cout << "Emplace barrier elapsed time: " << max_elapsed_time * 1000 * 1000 << " microseconds" << std::endl;
 
     // Read performance test
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
@@ -146,7 +146,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
     pComm->barrier();
     boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
     boost::mpi::all_reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>());
-    std::cout << "Read barrier elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+    std::cout << "Read barrier elapsed time: " << max_elapsed_time * 1000 * 1000 << " microseconds" << std::endl;
 
     std::cout << "[Rank "<< rank << " on node " << node << ":] ";
     std::cout << "begin to erase.... " << std::endl;
@@ -174,7 +174,7 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
 
     pComm->barrier();
     boost::mpi::reduce(*pComm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0);
-    std::cout << "Erase barrier elapsed time: " << max_elapsed_time << " seconds" << std::endl;
+    std::cout << "Erase barrier elapsed time: " << max_elapsed_time * 1000 * 1000 << " microseconds" << std::endl;
 
     if (rank == 0)
     {
