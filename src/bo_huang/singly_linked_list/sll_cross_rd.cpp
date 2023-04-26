@@ -22,7 +22,7 @@ const int MEM_LENGTH = 1 * (1 << 30);
     do                                                                              \
     {                                                                               \
         std::cout << "[Rank " << rank << " on node " << node << ":] ";              \
-        std::cout << "Begin read " << TIMES << " data ... " << typeid(T).name();\
+        std::cout << "Begin read " << TIMES << " " << typeid(T).name() << " data ... " ;   \
         start_time = MPI_Wtime();                                                   \
         for (auto it = slist->begin(); it != slist->end(); ++it)                    \
         {                                                                           \
