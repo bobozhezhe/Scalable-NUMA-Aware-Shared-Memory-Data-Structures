@@ -16,18 +16,20 @@
 
 namespace bip = boost::interprocess;
 
-const int MEM_LENGTH = 256 * (1 << 20);
+const int MEM_LENGTH = 1 * (1 << 30);
 
-#define MEASURE_TIME_MPI(loop_code)                                                                 \
-    do                                                                                              \
-    {                                                                                               \
-        double max_elapsed_time;                                                                    \
-        double start_time = MPI_Wtime();                                                            \
-        loop_code;                                                                                  \
-        double end_time = MPI_Wtime();                                                              \
-        double elapsed_time = end_time - start_time;                                                \
-        boost::mpi::reduce(comm, elapsed_time, max_elapsed_time, boost::mpi::maximum<double>(), 0); \
-        std::cout << "- elapsed time: " << max_elapsed_time << " seconds" << std::endl;             \
+#define MEASURE_READ_TIME()                                                         \
+    do                                                                              \
+    {                                                                               \
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";              \
+        std::cout << "Begin read " << TIMES << " data ... " << typeid(T).name();\
+        start_time = MPI_Wtime();                                                   \
+        for (auto it = slist->begin(); it != slist->end(); ++it)                    \
+        {                                                                           \
+            value = *it;                                                            \
+        }                                                                           \
+        end_time = MPI_Wtime();                                                     \
+        std::cout << "Finish read ... " << std::endl;                               \
     } while (0)
 
 template <typename T>
@@ -35,9 +37,9 @@ int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times
 {
 
     const int TIMES = loop_num;
-    const int NUM_PROCESSES = 4;
-    const int MEM_LENGTH = 256 * (1 << 20); // 256MB
-    const int MAP_LENGTH = 1024;
+    // const int NUM_PROCESSES = 4;
+    // const int MEM_LENGTH = 256 * (1 << 20); // 256MB
+    // const int MAP_LENGTH = 1024;
 
     int rank = pComm->rank();
     // Define the shared memory name
@@ -145,58 +147,22 @@ int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times
     T value;
     if (rank == 0)
     {
-        std::cout << "[Rank " << rank << " on node " << node << ":] ";
-        std::cout << "Begin read " << TIMES << " data ... ";
-        start_time = MPI_Wtime();
-        // Distribute get operations across all processes
-        for (auto it = slist->begin(); it != slist->end(); ++it)
-        {
-            value = *it;
-        }
-        end_time = MPI_Wtime();
-        std::cout << "Finish read ... " << std::endl;
+        MEASURE_READ_TIME();
     }
     pComm->barrier();
     if (rank == 1)
     {
-        std::cout << "[Rank " << rank << " on node " << node << ":] ";
-        std::cout << "Begin read " << TIMES << " data ... ";
-        start_time = MPI_Wtime();
-        // Distribute get operations across all processes
-        for (auto it = slist->begin(); it != slist->end(); ++it)
-        {
-            value = *it;
-        }
-        end_time = MPI_Wtime();
-        std::cout << "Finish read ... " << std::endl;
+        MEASURE_READ_TIME();
     }
     pComm->barrier();
     if (rank == 2)
     {
-        std::cout << "[Rank " << rank << " on node " << node << ":] ";
-        std::cout << "Begin read " << TIMES << " data ... ";
-        start_time = MPI_Wtime();
-        // Distribute get operations across all processes
-        for (auto it = slist->begin(); it != slist->end(); ++it)
-        {
-            value = *it;
-        }
-        end_time = MPI_Wtime();
-        std::cout << "Finish read ... " << std::endl;
+        MEASURE_READ_TIME();
     }
     pComm->barrier();
     if (rank == 3)
     {
-        std::cout << "[Rank " << rank << " on node " << node << ":] ";
-        std::cout << "Begin read " << TIMES << " data ... ";
-        start_time = MPI_Wtime();
-        // Distribute get operations across all processes
-        for (auto it = slist->begin(); it != slist->end(); ++it)
-        {
-            value = *it;
-        }
-        end_time = MPI_Wtime();
-        std::cout << "Finish read ... " << std::endl;
+        MEASURE_READ_TIME();
     }
     pComm->barrier();
 
@@ -305,7 +271,8 @@ int main(int argc, char **argv)
         // test_shm_cross_slist(2, loop_num, times, &comm);
 
         std::string container_names[1] = {"boost::intrusive::slist"};
-        std::string datatype_names[3] = {typeid(int).name(), typeid(double).name(), typeid(std::vector<int>).name()};
+        // std::string datatype_names[3] = {typeid(int).name(), typeid(double).name(), typeid(std::vector<int>).name()};
+        std::string datatype_names[3] = {typeid(int).name(), typeid(double).name(), typeid(long unsigned int).name()};
         std::string operation_names[3] = {"insert", "read", "erase"};
 
         for (int container_num = 0; container_num < 1; container_num++)
