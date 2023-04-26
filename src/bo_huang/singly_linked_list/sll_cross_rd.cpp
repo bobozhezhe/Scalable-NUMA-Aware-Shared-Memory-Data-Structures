@@ -142,15 +142,16 @@ int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times
     // std::cout << "[Rank " << rank << " on node " << node << ":] ";
     // std::cout << "Get mutex_lock ... " << std::endl;
 
+    T value;
     if (rank == 0)
     {
         std::cout << "[Rank " << rank << " on node " << node << ":] ";
-        std::cout << "Begin read ... ";
+        std::cout << "Begin read " << TIMES << " data ... ";
         start_time = MPI_Wtime();
         // Distribute get operations across all processes
         for (auto it = slist->begin(); it != slist->end(); ++it)
         {
-            int value = *it;
+            value = *it;
         }
         end_time = MPI_Wtime();
         std::cout << "Finish read ... " << std::endl;
@@ -159,12 +160,12 @@ int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times
     if (rank == 1)
     {
         std::cout << "[Rank " << rank << " on node " << node << ":] ";
-        std::cout << "Begin read ... ";
+        std::cout << "Begin read " << TIMES << " data ... ";
         start_time = MPI_Wtime();
         // Distribute get operations across all processes
         for (auto it = slist->begin(); it != slist->end(); ++it)
         {
-            int value = *it;
+            value = *it;
         }
         end_time = MPI_Wtime();
         std::cout << "Finish read ... " << std::endl;
@@ -173,12 +174,12 @@ int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times
     if (rank == 2)
     {
         std::cout << "[Rank " << rank << " on node " << node << ":] ";
-        std::cout << "Begin read ... ";
+        std::cout << "Begin read " << TIMES << " data ... ";
         start_time = MPI_Wtime();
         // Distribute get operations across all processes
         for (auto it = slist->begin(); it != slist->end(); ++it)
         {
-            int value = *it;
+            value = *it;
         }
         end_time = MPI_Wtime();
         std::cout << "Finish read ... " << std::endl;
@@ -187,12 +188,12 @@ int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times
     if (rank == 3)
     {
         std::cout << "[Rank " << rank << " on node " << node << ":] ";
-        std::cout << "Begin read ... ";
+        std::cout << "Begin read " << TIMES << " data ... ";
         start_time = MPI_Wtime();
         // Distribute get operations across all processes
         for (auto it = slist->begin(); it != slist->end(); ++it)
         {
-            int value = *it;
+            value = *it;
         }
         end_time = MPI_Wtime();
         std::cout << "Finish read ... " << std::endl;
@@ -270,6 +271,7 @@ int main(int argc, char **argv)
     // int loop_num = 1000;
 
     const int kNumTests = 4;
+    // constexpr int kNumIters[kNumTests] = {10000, 100000, 1000000, 10000000};
     constexpr int kNumIters[kNumTests] = {10000, 100000, 1000000, 10000000};
 
     // Initialize MPI
