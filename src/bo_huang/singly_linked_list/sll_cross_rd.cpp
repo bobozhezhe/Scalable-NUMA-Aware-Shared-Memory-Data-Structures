@@ -31,7 +31,7 @@ const int MEM_LENGTH = 256 * (1 << 20);
     } while (0)
 
 template <typename T>
-int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::communicator *pComm)
+int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times, boost::mpi::communicator *pComm)
 {
 
     const int TIMES = loop_num;
@@ -107,7 +107,18 @@ int test_shm_cross_slist(int loop_num, std::vector<double> &times, boost::mpi::c
         start_time = MPI_Wtime();
         for (int i = 0; i < TIMES; ++i)
         {
-            slist->push_front(i);
+            // if(data_type == 0)
+            //     slist->push_front(i);
+            // else if(data_type == 2)
+            //     slist->push_front((double)i);
+            // else if(data_type == 3){
+            //     // std::vector<std::uint64_t> vec{(uint64_t)i, (uint64_t)i+1, (uint64_t)i+2, (uint64_t)i+3};
+            //     // (long unsigned int)i
+            //     slist->push_front((long unsigned int)i);
+            T tmp = static_cast<T>(i);
+                slist->push_front(tmp);
+            // }
+
             // map->emplace(i, i);
         }
         // );
@@ -259,7 +270,7 @@ int main(int argc, char **argv)
     // int loop_num = 1000;
 
     const int kNumTests = 4;
-    constexpr int kNumIters[kNumTests] = {1000, 10000, 100000, 1000000};
+    constexpr int kNumIters[kNumTests] = {10000, 100000, 1000000, 10000000};
 
     // Initialize MPI
     boost::mpi::environment env(argc, argv);
@@ -283,9 +294,13 @@ int main(int argc, char **argv)
         int loop_num = kNumIters[i];
         std::cout << "boost::container::slist on shared_memory loop = " << loop_num << std::endl;
 
-        test_shm_cross_slist<int>(loop_num, times, &comm);
-        test_shm_cross_slist<double>(loop_num, times, &comm);
-        test_shm_cross_slist<std::vector<int>>(loop_num, times, &comm);
+        test_shm_cross_slist<int>(0, loop_num, times, &comm);
+        test_shm_cross_slist<double>(1, loop_num, times, &comm);
+        test_shm_cross_slist<long unsigned int>(2, loop_num, times, &comm);
+        // test_shm_cross_slist<std::vector<int>>(loop_num, times, &comm);
+        // test_shm_cross_slist(0, loop_num, times, &comm);
+        // test_shm_cross_slist(1, loop_num, times, &comm);
+        // test_shm_cross_slist(2, loop_num, times, &comm);
 
         std::string container_names[1] = {"boost::intrusive::slist"};
         std::string datatype_names[3] = {typeid(int).name(), typeid(double).name(), typeid(std::vector<int>).name()};
