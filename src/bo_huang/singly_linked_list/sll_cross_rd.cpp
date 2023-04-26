@@ -18,18 +18,18 @@ namespace bip = boost::interprocess;
 
 const long long MEM_LENGTH = 4 * (1LL << 30);
 
-#define MEASURE_READ_TIME()                                                         \
-    do                                                                              \
-    {                                                                               \
-        std::cout << "[Rank " << rank << " on node " << node << ":] ";              \
-        std::cout << "Begin read " << TIMES << " " << typeid(T).name() << " data ... " ;   \
-        start_time = MPI_Wtime();                                                   \
-        for (auto it = slist->begin(); it != slist->end(); ++it)                    \
-        {                                                                           \
-            value = *it;                                                            \
-        }                                                                           \
-        end_time = MPI_Wtime();                                                     \
-        std::cout << "Finish read ... " << std::endl;                               \
+#define MEASURE_READ_TIME()                                                             \
+    do                                                                                  \
+    {                                                                                   \
+        std::cout << "[Rank " << rank << " on node " << node << ":] ";                  \
+        std::cout << "Begin read " << TIMES << " " << typeid(T).name() << " data ... "; \
+        start_time = MPI_Wtime();                                                       \
+        for (auto it = slist->begin(); it != slist->end(); ++it)                        \
+        {                                                                               \
+            value = *it;                                                                \
+        }                                                                               \
+        end_time = MPI_Wtime();                                                         \
+        std::cout << "Finish read ... " << std::endl;                                   \
     } while (0)
 
 template <typename T>
@@ -110,11 +110,19 @@ int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times
         for (int i = 0; i < TIMES; ++i)
         {
             T tmp = static_cast<T>(i);
-            try{
-            slist->push_front(tmp);
+            try
+            {
+                slist->push_front(tmp);
             }
-            catch(const std::bad_alloc& e){
-                std::cerr << "Error: " << e.what() << " at loop count " << i << std::endl;
+            catch (const std::exception &e)
+            {
+                std::cout << "Error: " << e.what() << " at loop count " << i << std::endl;
+                return 1;
+            }
+            catch (...)
+            {
+                std::cout << "Unknown error occurred at loop count " << i << std::endl;
+                return 1;
             }
         }
         // );
@@ -251,7 +259,7 @@ int main(int argc, char **argv)
     int row = 0;
     // table header
     file << "container,datatype,operation,loop_num,time(us)" << std::endl;
-    for (int i = 4; i < kNumTests; i++)
+    for (int i = 3; i < kNumTests; i++)
     {
         int loop_num = kNumIters[i];
         std::cout << "boost::container::slist on shared_memory loop = " << loop_num << std::endl;
