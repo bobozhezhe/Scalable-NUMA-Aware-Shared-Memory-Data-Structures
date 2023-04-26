@@ -16,7 +16,7 @@
 
 namespace bip = boost::interprocess;
 
-const int MEM_LENGTH = 1 * (1 << 30);
+const long long MEM_LENGTH = 4 * (1LL << 30);
 
 #define MEASURE_READ_TIME()                                                         \
     do                                                                              \
@@ -109,19 +109,13 @@ int test_shm_cross_slist(int data_type, int loop_num, std::vector<double> &times
         start_time = MPI_Wtime();
         for (int i = 0; i < TIMES; ++i)
         {
-            // if(data_type == 0)
-            //     slist->push_front(i);
-            // else if(data_type == 2)
-            //     slist->push_front((double)i);
-            // else if(data_type == 3){
-            //     // std::vector<std::uint64_t> vec{(uint64_t)i, (uint64_t)i+1, (uint64_t)i+2, (uint64_t)i+3};
-            //     // (long unsigned int)i
-            //     slist->push_front((long unsigned int)i);
             T tmp = static_cast<T>(i);
-                slist->push_front(tmp);
-            // }
-
-            // map->emplace(i, i);
+            try{
+            slist->push_front(tmp);
+            }
+            catch(const std::bad_alloc& e){
+                std::cerr << "Error: " << e.what() << " at loop count " << i << std::endl;
+            }
         }
         // );
     }
@@ -238,7 +232,7 @@ int main(int argc, char **argv)
 
     const int kNumTests = 4;
     // constexpr int kNumIters[kNumTests] = {10000, 100000, 1000000, 10000000};
-    constexpr int kNumIters[kNumTests] = {10000, 100000, 1000000, 10000000};
+    constexpr int kNumIters[kNumTests] = {10000, 100000, 1000000, 100000000};
 
     // Initialize MPI
     boost::mpi::environment env(argc, argv);
@@ -257,13 +251,13 @@ int main(int argc, char **argv)
     int row = 0;
     // table header
     file << "container,datatype,operation,loop_num,time(us)" << std::endl;
-    for (int i = 0; i < kNumTests; i++)
+    for (int i = 4; i < kNumTests; i++)
     {
         int loop_num = kNumIters[i];
         std::cout << "boost::container::slist on shared_memory loop = " << loop_num << std::endl;
 
-        test_shm_cross_slist<int>(0, loop_num, times, &comm);
-        test_shm_cross_slist<double>(1, loop_num, times, &comm);
+        // test_shm_cross_slist<int>(0, loop_num, times, &comm);
+        // test_shm_cross_slist<double>(1, loop_num, times, &comm);
         test_shm_cross_slist<long unsigned int>(2, loop_num, times, &comm);
         // test_shm_cross_slist<std::vector<int>>(loop_num, times, &comm);
         // test_shm_cross_slist(0, loop_num, times, &comm);
